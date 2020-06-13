@@ -35,7 +35,7 @@ struct Proceso {
 
 // Vectores de memoria;
 vector<ProcesoReal*> M;
-vector<ProcesoVirtual> S;
+vector<ProcesoVirtual*> S;
 
 vector<Proceso> procesos;
 
@@ -47,6 +47,8 @@ int cantPageFaults;
 void valoresIniciales() {
     for (int i = 0; i < 128; i++) {
         M.push_back(NULL);
+        S.push_back(NULL);
+        S.push_back(NULL);
     }
 
     tiempo = 0;
@@ -71,14 +73,22 @@ void cargarAMemoria(int bytes, int proceso) {
         Proceso proc;
 
         for (int i = 0; i < cantPaginas; i++) {
-            ProcesoVirtual virt;
+            bool memoriaEncontrada = false;
+            int pos;
+            for (int j = 0; !memoriaEncontrada && j < M.size(); j++) {
+                if (S[j] == NULL) {
+                    S[j] = new ProcesoVirtual;
+                    S[j]->idProceso = proceso;
+                    S[j]->timestamp = ++tiempo;
+                    S[j]->pagina = j;
 
-            virt.idProceso = proceso;
-            virt.pagina = i;
-            virt.timestamp = ++tiempo;
+                    pos = j;
+                    memoriaEncontrada = true;
+                }
+            }
 
             // conseguir marco de pagina
-            bool memoriaEncontrada = false;
+            memoriaEncontrada = false;
             for (int j = 0; !memoriaEncontrada && j < M.size(); j++) {
                 if (M[j] == NULL) {
                     M[j] = new ProcesoReal;
@@ -87,7 +97,7 @@ void cargarAMemoria(int bytes, int proceso) {
                     M[j]->cantBytes = (bytes > tamPagina) ? tamPagina : bytes;
 
                     bytes -= tamPagina;
-                    virt.marcoDePagina = j;
+                    S[pos]->marcoDePagina = j;
                     memoriaEncontrada = true;
                 }
             }
@@ -95,8 +105,6 @@ void cargarAMemoria(int bytes, int proceso) {
             if (!memoriaEncontrada) {
                 // swapping
             }
-
-            S.push_back(virt);
         }
 
         proc.idProceso = proceso;
