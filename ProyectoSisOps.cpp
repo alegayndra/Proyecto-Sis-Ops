@@ -23,6 +23,7 @@ struct S {
 //Proceso
 struct P {
 
+//alo
     double tiempoInicio;
     double tiempoFinal;
 
