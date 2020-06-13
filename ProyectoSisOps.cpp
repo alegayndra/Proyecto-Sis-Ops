@@ -6,39 +6,48 @@
 
 using namespace std;
 
-vector<bool> M, S;
-
 //Marco de página
-struct M {
-
-
+struct ProcesoReal {
+    int idProceso;
+    double timestamp;
 };
 
 //Swaping [Virtual]
-struct S {
-
-
+struct ProcesoVirtual {
+    int idProceso;
+    int pagina;
+    int marcoDePagina;
+    double timestamp;
 };
 
 //Proceso
-struct P {
-
+struct Proceso {
+    int idProceso;
     double tiempoInicio;
     double tiempoFinal;
-
 };
+
+// Vectores de memoria;
+vector<ProcesoReal*> M;
+vector<ProcesoVirtual*> S;
+
+// Variables globales
+double tiempo;
+int tamPagina;
+
+void valoresIniciales() {
+    for (int i = 0; i < 2048; i++) {
+        M.push_back(NULL);
+        S.push_back(NULL);
+        S.push_back(NULL);
+    }
+
+    tamPagina = 16;
+    tiempo = 0;
+}
 
 int main() {
 
+    valoresIniciales();
 
-
-    for (int i = 0; i < 2048; i++) {
-        M.push_back(false);
-        S.push_back(false);
-        S.push_back(false);
-    }
-
-
-    cout << "M size: !" << M.size() << "\n";
-    cout << "S size: !" << S.size() <<"\n";
 }
