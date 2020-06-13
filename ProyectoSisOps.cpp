@@ -75,7 +75,7 @@ void reiniciarValores() {
 void swapping(int posicion) {
 
     cantSwaps++;
-    tiempo += 0.1;
+    tiempo++;
 
     double valor = INT_MAX;
     int posReal;
@@ -162,8 +162,32 @@ void cargarAMemoria(int bytes, int proceso) {
     }
 }
 
+/*Funcion utilizada para liberar el proceso de memoria
+    Parámetros:
+        -Proceso: Representa el ID del proceso a liberar
+*/
 void accederADireccion(int direccion, int proceso, bool modificar) {
+    tiempo += 0.1;
+    for(int i = 0; i < procesos.size(); i++){
+        if(proceso == procesos[i].idProceso){
+            int pagina = direccion / procesos[i].tamProceso;
+            for(int j = 0; j < 256; j++){
+                if(S[j] != NULL && S[j]->idProceso == proceso && S[j]->pagina == pagina){
+                    if(S[j]->marcoDePagina > -1){
+                        int dirReal = procesos[j].tamProceso % tamPagina + S[j]->marcoDePagina * tamPagina;
+                        if(politica == "LRU"){
+                            M[S[j]->marcoDePagina]->timestamp = tiempo;
+                        }
 
+                    }
+                    else{
+                        swapping(j);
+                        procesos[i].cantPageFaults++;
+                    }
+                }
+            }
+        }
+    }
 }
 
 /*Funcion utilizada para liberar el proceso de memoria
