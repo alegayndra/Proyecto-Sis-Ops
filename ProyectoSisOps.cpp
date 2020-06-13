@@ -65,14 +65,14 @@ void cargarAMemoria(int bytes, int proceso) {
     int cantPaginas;
     cantPaginas = ceil(bytes / cantPaginas);
 
-    if (cantPaginas + S.size() <= 2046) {
+    if (cantPaginas + S.size() <= 2048) {
         Proceso proc;
 
         for (int i = 0; i < cantPaginas; i++) {
             ProcesoVirtual virt;
 
             virt.idProceso = proceso;
-            virt.pagina = i + 1;
+            virt.pagina = i;
             virt.timestamp = ++tiempo;
 
             // conseguir marco de pagina
@@ -89,7 +89,27 @@ void accederADireccion(int direccion, int proceso, bool modificar) {
 }
 
 void liberarProceso(int proceso) {
-
+    //Utilizado para registrar los marcos de pag. a liberar
+    vector <int> marcosDePagina;
+    //Utilizado para registrar las pag. a liberar
+    vector <int> paginas;
+    for(int i = 0; i < 128; i++){
+        if(proceso == M[i]->idProceso){
+            marcosDePagina.push_back(i);
+            tiempo += 0.1;
+            delete M[i];
+            M[i] = NULL;
+        }
+    }
+    
+    for(int i = 0; i < 256; i++){
+        if(proceso == S[i]->idProceso){
+            paginas.push_back(i);
+            tiempo += 0.1;
+            delete S[i];
+            S[i] = NULL;
+        }
+    }
 }
 
 void finCiclo() {
