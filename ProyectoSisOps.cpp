@@ -32,10 +32,6 @@ struct Proceso {
     int cantPaginas;
 };
 
-int main() {
-
-    
-
 // Vectores de memoria;
 vector<ProcesoReal*> M;
 vector<ProcesoVirtual*> S;
