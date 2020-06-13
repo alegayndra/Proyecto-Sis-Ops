@@ -6,7 +6,7 @@
 
 using namespace std;
 
-//Marco de página
+//Marco de pï¿½gina
 struct ProcesoReal {
     int idProceso;
     double timestamp;
