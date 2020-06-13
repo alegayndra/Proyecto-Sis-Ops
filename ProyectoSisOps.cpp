@@ -42,6 +42,7 @@ vector<Proceso> procesos;
 // Variables globales
 double tiempo;
 int tamPagina;
+int cantPageFaults;
 
 void valoresIniciales() {
     for (int i = 0; i < 128; i++) {
@@ -50,6 +51,7 @@ void valoresIniciales() {
 
     tiempo = 0;
     tamPagina = 16;
+    cantPageFaults = 0;
 }
 
 void reiniciarValores() {
@@ -76,6 +78,25 @@ void cargarAMemoria(int bytes, int proceso) {
             virt.timestamp = ++tiempo;
 
             // conseguir marco de pagina
+            bool memoriaEncontrada = false;
+            for (int j = 0; !memoriaEncontrada && j < M.size(); j++) {
+                if (M[j] == NULL) {
+                    M[j] = new ProcesoReal;
+                    M[j]->idProceso = proceso;
+                    M[j]->timestamp = tiempo;
+                    M[j]->cantBytes = (bytes > tamPagina) ? tamPagina : bytes;
+
+                    bytes -= tamPagina;
+                    virt.marcoDePagina = j;
+                    memoriaEncontrada = true;
+                }
+            }
+
+            if (!memoriaEncontrada) {
+                // swapping
+            }
+
+            S.push_back(virt);
         }
 
         proc.idProceso = proceso;
