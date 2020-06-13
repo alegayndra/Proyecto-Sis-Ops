@@ -3,6 +3,9 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -44,6 +47,35 @@ void valoresIniciales() {
 
     tamPagina = 16;
     tiempo = 0;
+}
+
+bool parsearInput(string linea) {
+    stringstream ss;
+    char c;
+    bool valor = false;
+
+    ss << linea;
+    ss >> c;
+
+    switch (c) {
+    case 'P':
+        break;
+    case 'A':
+        break;
+    case 'L':
+        break;
+    case 'C':
+        break;
+    case 'F':
+        break;
+    case 'E':
+        valor = true;
+        break;
+    default:
+        break;
+    }
+
+    return valor;
 }
 
 int main() {
