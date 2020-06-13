@@ -45,7 +45,7 @@ vector<Proceso> procesos;
 // Variables globales
 double tiempo;
 int tamPagina;
-int cantPageFaults;
+int cantSwaps;
 string politica;
 
 /*Funcion donde se inicializa como NULL los vectores (ya que son de apuntadores) */
@@ -58,7 +58,7 @@ void valoresIniciales() {
 
     tiempo = 0;
     tamPagina = 16;
-    cantPageFaults = 0;
+    cantSwaps = 0;
 }
 
 /*Función utilizada para reiniciar los valores en la función de "fin" */
@@ -72,6 +72,7 @@ void reiniciarValores() {
 
 void swapping(int posicion) {
 
+    cantSwaps++;
     tiempo += 0.1;
 
     double valor = INT_MAX;
