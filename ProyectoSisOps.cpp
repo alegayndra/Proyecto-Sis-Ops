@@ -23,6 +23,7 @@ struct ProcesoVirtual {
     int pagina;
     int marcoDePagina;
     double timestamp;
+    int cantBytes;
 };
 
 //Proceso
@@ -43,6 +44,7 @@ vector<Proceso> procesos;
 double tiempo;
 int tamPagina;
 int cantPageFaults;
+string politica;
 
 void valoresIniciales() {
     for (int i = 0; i < 128; i++) {
@@ -64,6 +66,35 @@ void reiniciarValores() {
     valoresIniciales();
 }
 
+void swapping(int posicion) {
+
+    tiempo += 0.1;
+
+    double valor = INT_MAX;
+    int posReal;
+
+    for (int i = 0; i < 128; i++) {
+        if (M[i] != NULL && valor > M[i]->timestamp) {
+            valor = M[i]->timestamp;
+            posReal = i;
+        }
+    }
+
+    int proceso = M[posReal]->idProceso;
+
+    for (int i = 0; i < 256; i++) {
+        if (S[i] != NULL && S[i]->idProceso == proceso && S[i]->marcoDePagina == posReal) {
+            S[i]->marcoDePagina = -1;
+
+            S[posicion]->marcoDePagina = posReal;
+
+            M[posReal]->idProceso = S[posicion]->idProceso;
+            M[posReal]->timestamp = tiempo;
+            M[posReal]->cantBytes = S[posicion]->cantBytes;
+        }
+    }
+}
+
 void cargarAMemoria(int bytes, int proceso) {
 
     int cantPaginas;
@@ -74,7 +105,7 @@ void cargarAMemoria(int bytes, int proceso) {
 
         for (int i = 0; i < cantPaginas; i++) {
             bool paginaEncontrada = false;
-            int pos;
+
             for (int j = 0; !paginaEncontrada && j < M.size(); j++) {
                 if (S[j] == NULL) {
                     S[j] = new ProcesoVirtual;
@@ -82,7 +113,6 @@ void cargarAMemoria(int bytes, int proceso) {
                     S[j]->timestamp = ++tiempo;
                     S[j]->pagina = j;
 
-                    pos = j;
                     paginaEncontrada = true;
 
                     // conseguir marco de pagina
@@ -94,14 +124,17 @@ void cargarAMemoria(int bytes, int proceso) {
                             M[j]->timestamp = tiempo;
                             M[j]->cantBytes = (bytes > tamPagina) ? tamPagina : bytes;
 
+                            S[i]->cantBytes = (bytes > tamPagina) ? tamPagina : bytes;
+                            S[i]->marcoDePagina = j;
+
                             bytes -= tamPagina;
-                            S[pos]->marcoDePagina = j;
+                            
                             memoriaEncontrada = true;
                         }
                     }
 
                     if (!memoriaEncontrada) {
-                        // swapping
+                        swapping(i);
                     }
                 }
             }
@@ -120,8 +153,10 @@ void accederADireccion(int direccion, int proceso, bool modificar) {
 void liberarProceso(int proceso) {
     //Utilizado para registrar los marcos de pag. a liberar
     vector <int> marcosDePagina;
+
     //Utilizado para registrar las pag. a liberar
     vector <int> paginas;
+
     for(int i = 0; i < 128; i++){
         if(proceso == M[i]->idProceso){
             marcosDePagina.push_back(i);
