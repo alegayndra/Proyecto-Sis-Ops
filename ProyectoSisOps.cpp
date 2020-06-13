@@ -87,7 +87,7 @@ bool parsearInput(string linea) {
     stringstream ss;
     string extra;
     char c;
-    bool valor = false; // para saber si acabar el programa o no
+    bool valor = true; // para saber si seguir el programa o no
 
     ss << linea;
     ss >> c;
@@ -116,7 +116,7 @@ bool parsearInput(string linea) {
         reiniciarValores();
         break;
     case 'E':
-        valor = true;
+        valor = false;
         break;
     default:
         break;
@@ -129,16 +129,20 @@ int main() {
 
     ifstream entrada;
     string linea;
+    bool seguir;
 
     valoresIniciales();
 
     entrada.open("");
 
     if (entrada.is_open()) {
-
+        do {
+            getline(entrada, linea);
+            seguir = parsearInput(linea);
+        } while (seguir);
     }
 
     entrada.close();
     
-
+    return 0;
 }
