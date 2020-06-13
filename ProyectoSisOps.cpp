@@ -1,6 +1,7 @@
 // ProyectoSisOps.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
+//Librerías auxiliares
 #include <iostream>
 #include <vector>
 #include <string>
@@ -38,6 +39,7 @@ struct Proceso {
 vector<ProcesoReal*> M;
 vector<ProcesoVirtual*> S;
 
+//Vector de procesos
 vector<Proceso> procesos;
 
 // Variables globales
@@ -46,6 +48,7 @@ int tamPagina;
 int cantPageFaults;
 string politica;
 
+/*Funcion donde se inicializa como NULL los vectores (ya que son de apuntadores) */
 void valoresIniciales() {
     for (int i = 0; i < 128; i++) {
         M.push_back(NULL);
@@ -58,6 +61,7 @@ void valoresIniciales() {
     cantPageFaults = 0;
 }
 
+/*Función utilizada para reiniciar los valores en la función de "fin" */
 void reiniciarValores() {
     M.clear();
     S.clear();
@@ -95,6 +99,11 @@ void swapping(int posicion) {
     }
 }
 
+/*Función utilizada para cargar un procesos a memoria
+    Parámetros:
+        -bytes: representa el tamaño del proceso
+        -proceso: representa el ID del proceso
+ */
 void cargarAMemoria(int bytes, int proceso) {
 
     int cantPaginas;
@@ -150,6 +159,10 @@ void accederADireccion(int direccion, int proceso, bool modificar) {
 
 }
 
+/*Funcion utilizada para liberar el proceso de memoria
+    Parámetros:
+        -Proceso: Representa el ID del proceso a liberar
+*/
 void liberarProceso(int proceso) {
     //Utilizado para registrar los marcos de pag. a liberar
     vector <int> marcosDePagina;
@@ -157,6 +170,7 @@ void liberarProceso(int proceso) {
     //Utilizado para registrar las pag. a liberar
     vector <int> paginas;
 
+    //Ciclo para liberar los marcos de página ocupados por el proceso en la memoria real
     for(int i = 0; i < 128; i++){
         if(proceso == M[i]->idProceso){
             marcosDePagina.push_back(i);
@@ -165,7 +179,8 @@ void liberarProceso(int proceso) {
             M[i] = NULL;
         }
     }
-    
+
+    //Ciclo para liberar las páginas ocupadas por el proceso en la memoria virtual     
     for(int i = 0; i < 256; i++){
         if(proceso == S[i]->idProceso){
             paginas.push_back(i);
@@ -174,12 +189,25 @@ void liberarProceso(int proceso) {
             S[i] = NULL;
         }
     }
+
+    //Ciclo para buscar el proceso que se acaba de liberar y marcar que ya terminó  
+    for(int i = 0; i < procesos.size(); i++){
+        if(proceso == procesos[i].idProceso){
+            procesos[i].tiempoFinal = tiempo;
+        }
+    }
 }
 
 void finCiclo() {
 
 }
 
+/*Funcion utilizada para procesar la entrada, y saber que instrucción se quiere ejecutar
+    Parámetros:
+        -línea: La instrucción a procesar
+    Output:
+        -bool: Especifíca si ya se terminó el proceso
+*/
 bool parsearInput(string linea) {
     stringstream ss;
     string extra;
@@ -216,8 +244,8 @@ bool parsearInput(string linea) {
         reiniciarValores();
         break;
     case 'E':
-
-        // mensaje de despedida
+        //Suena dubstep en el fondo
+        cout << "aZtaaaa la procSimaaaaaa" << endl;
 
         valor = false;
         break;
@@ -228,6 +256,7 @@ bool parsearInput(string linea) {
     return valor;
 }
 
+/*Funcion principal para la lectura del archivo y reinicio del proceso*/
 int main() {
 
     ifstream entrada;
