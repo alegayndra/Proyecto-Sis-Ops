@@ -10,16 +10,15 @@
 
 using namespace std;
 
-//Marco de p�gina
-struct ProcesoReal
-{
+//Marco de pagina
+struct ProcesoReal {
     int idProceso;
     double timestamp;
+    int cantBytes;
 };
 
 //Swaping [Virtual]
-struct ProcesoVirtual
-{
+struct ProcesoVirtual {
     int idProceso;
     int pagina;
     int marcoDePagina;
@@ -27,8 +26,7 @@ struct ProcesoVirtual
 };
 
 //Proceso
-struct Proceso
-{
+struct Proceso {
     int idProceso;
     double tiempoInicio;
     double tiempoFinal;
@@ -37,7 +35,7 @@ struct Proceso
 
 // Vectores de memoria;
 vector<ProcesoReal*> M;
-vector<ProcesoVirtual*> S;
+vector<ProcesoVirtual> S;
 
 vector<Proceso> procesos;
 
@@ -46,10 +44,8 @@ double tiempo;
 int tamPagina;
 
 void valoresIniciales() {
-    for (int i = 0; i < 2048; i++) {
+    for (int i = 0; i < 128; i++) {
         M.push_back(NULL);
-        S.push_back(NULL);
-        S.push_back(NULL);
     }
 
     tiempo = 0;
@@ -64,31 +60,46 @@ void reiniciarValores() {
     valoresIniciales();
 }
 
-void cargarAMemoria(int proceso, int bytes) {
+void cargarAMemoria(int bytes, int proceso) {
 
     int cantPaginas;
     cantPaginas = ceil(bytes / cantPaginas);
 
-    Proceso proc;
+    if (cantPaginas + S.size() <= 2046) {
+        Proceso proc;
 
-    for (int i = 0; i < cantPaginas; i++) {
-        ProcesoVirtual virt;
+        for (int i = 0; i < cantPaginas; i++) {
+            ProcesoVirtual virt;
 
-        virt.idProceso = proceso;
-        virt.pagina = i + 1;
-        virt.timestamp = ++tiempo;
+            virt.idProceso = proceso;
+            virt.pagina = i + 1;
+            virt.timestamp = ++tiempo;
 
-        // conseguir marco de pagina
+            // conseguir marco de pagina
+        }
+
+        proc.idProceso = proceso;
+        proc.cantPaginas = cantPaginas;
+        proc.tiempoInicio = tiempo;
     }
+}
 
-    proc.idProceso = proceso;
-    proc.cantPaginas = cantPaginas;
-    proc.tiempoInicio = tiempo;
+void accederADireccion(int direccion, int proceso, bool modificar) {
+
+}
+
+void liberarProceso(int proceso) {
+
+}
+
+void finCiclo() {
+
 }
 
 bool parsearInput(string linea) {
     stringstream ss;
     string extra;
+    string n, p, d, m;
     char c;
     bool valor = true; // para saber si seguir el programa o no
 
@@ -101,24 +112,29 @@ bool parsearInput(string linea) {
 
     switch (c) {
     case 'P':
-        int proceso, bytes;
-        cargarAMemoria(proceso, bytes);
+        ss >> n >> p;
+        cargarAMemoria(stoi(n), stoi(p));
         break;
     case 'A':
+        ss >> d >> p >> m;
+        accederADireccion(stoi(d), stoi(p), stoi(m));
         break;
     case 'L':
+        ss >> p;
+        liberarProceso(stoi(p));
         break;
     case 'C':
         getline(ss, extra);
         cout << extra << endl;
         break;
     case 'F':
-
-        // hacer todo el rollo
-
+        finCiclo();
         reiniciarValores();
         break;
     case 'E':
+
+        // mensaje de despedida
+
         valor = false;
         break;
     default:
