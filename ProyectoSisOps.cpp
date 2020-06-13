@@ -10,7 +10,7 @@
 
 using namespace std;
 
-//Marco de página
+//Marco de pï¿½gina
 struct ProcesoReal {
     int idProceso;
     double timestamp;
@@ -32,9 +32,17 @@ struct Proceso {
     int cantPaginas;
 };
 
+<<<<<<< HEAD
+int main() {
+<<<<<<< HEAD
+    
+=======
+
+=======
 // Vectores de memoria;
 vector<ProcesoReal*> M;
 vector<ProcesoVirtual*> S;
+>>>>>>> refs/remotes/origin/dev
 
 vector<Proceso> procesos;
 
@@ -42,7 +50,11 @@ vector<Proceso> procesos;
 double tiempo;
 int tamPagina;
 
+<<<<<<< HEAD
+>>>>>>> ac700f6b2992b714967f3c75f3716d9d477ee8df
+=======
 void valoresIniciales() {
+>>>>>>> refs/remotes/origin/dev
     for (int i = 0; i < 2048; i++) {
         M.push_back(NULL);
         S.push_back(NULL);
