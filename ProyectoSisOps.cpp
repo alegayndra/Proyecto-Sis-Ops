@@ -6,7 +6,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include <tgmath.h> 
+#include <tgmath.h>
 
 using namespace std;
 
@@ -26,14 +26,9 @@ struct ProcesoVirtual {
 };
 
 //Proceso
-<<<<<<< HEAD
-struct P {
 
-//alo
-=======
 struct Proceso {
     int idProceso;
->>>>>>> c0a992d4d93ec6cbf55ca8477595130a5dd004a8
     double tiempoInicio;
     double tiempoFinal;
     int cantPaginas;
@@ -168,6 +163,6 @@ int main() {
     }
 
     entrada.close();
-    
+
     return 0;
 }
