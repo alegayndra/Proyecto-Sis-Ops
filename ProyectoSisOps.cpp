@@ -7,13 +7,15 @@
 using namespace std;
 
 //Marco de p�gina
-struct ProcesoReal {
+struct ProcesoReal
+{
     int idProceso;
     double timestamp;
 };
 
 //Swaping [Virtual]
-struct ProcesoVirtual {
+struct ProcesoVirtual
+{
     int idProceso;
     int pagina;
     int marcoDePagina;
@@ -21,37 +23,39 @@ struct ProcesoVirtual {
 };
 
 //Proceso
-struct Proceso {
+struct Proceso
+{
     int idProceso;
     double tiempoInicio;
     double tiempoFinal;
 };
 
-int main() {
+int main()
+{
 
-    
+    // Vectores de memoria;
+    vector<ProcesoReal *> M;
+    vector<ProcesoVirtual *> S;
 
-// Vectores de memoria;
-vector<ProcesoReal*> M;
-vector<ProcesoVirtual*> S;
+    // Variables globales
+    double tiempo;
+    int tamPagina;
 
-// Variables globales
-double tiempo;
-int tamPagina;
+    void valoresIniciales()
+    {
+        for (int i = 0; i < 2048; i++)
+        {
+            M.push_back(NULL);
+            S.push_back(NULL);
+            S.push_back(NULL);
+        }
 
-void valoresIniciales() {
-    for (int i = 0; i < 2048; i++) {
-        M.push_back(NULL);
-        S.push_back(NULL);
-        S.push_back(NULL);
+        tamPagina = 16;
+        tiempo = 0;
     }
 
-    tamPagina = 16;
-    tiempo = 0;
-}
+    int main()
+    {
 
-int main() {
-
-    valoresIniciales();
-
-}
+        valoresIniciales();
+    }
