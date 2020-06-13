@@ -34,6 +34,7 @@ struct Proceso {
     double tiempoFinal;
     int cantPaginas;
     int cantPageFaults;
+    int tamProceso;
 };
 
 // Vectores de memoria;
@@ -154,6 +155,10 @@ void cargarAMemoria(int bytes, int proceso) {
         proc.idProceso = proceso;
         proc.cantPaginas = cantPaginas;
         proc.tiempoInicio = tiempo;
+        proc.tamProceso = bytes;
+        proc.tiempoFinal = -1;
+
+        procesos.push_back(proc);
     }
 }
 
