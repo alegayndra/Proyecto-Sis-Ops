@@ -9,7 +9,7 @@ using namespace std;
 vector<bool> M, S;
 
 int main() {
-
+    
     for (int i = 0; i < 2048; i++) {
         M.push_back(false);
         S.push_back(false);
