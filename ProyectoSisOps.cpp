@@ -11,13 +11,15 @@
 using namespace std;
 
 //Marco de p�gina
-struct ProcesoReal {
+struct ProcesoReal
+{
     int idProceso;
     double timestamp;
 };
 
 //Swaping [Virtual]
-struct ProcesoVirtual {
+struct ProcesoVirtual
+{
     int idProceso;
     int pagina;
     int marcoDePagina;
@@ -25,7 +27,8 @@ struct ProcesoVirtual {
 };
 
 //Proceso
-struct Proceso {
+struct Proceso
+{
     int idProceso;
     double tiempoInicio;
     double tiempoFinal;
@@ -49,8 +52,8 @@ void valoresIniciales() {
         S.push_back(NULL);
     }
 
-    tamPagina = 16;
     tiempo = 0;
+    tamPagina = 16;
 }
 
 void reiniciarValores() {
