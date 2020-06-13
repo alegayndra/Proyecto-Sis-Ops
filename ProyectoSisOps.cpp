@@ -6,6 +6,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <tgmath.h> 
 
 using namespace std;
 
@@ -28,11 +29,14 @@ struct Proceso {
     int idProceso;
     double tiempoInicio;
     double tiempoFinal;
+    int cantPaginas;
 };
 
 // Vectores de memoria;
 vector<ProcesoReal*> M;
 vector<ProcesoVirtual*> S;
+
+vector<Proceso> procesos;
 
 // Variables globales
 double tiempo;
@@ -49,24 +53,67 @@ void valoresIniciales() {
     tiempo = 0;
 }
 
+void reiniciarValores() {
+    M.clear();
+    S.clear();
+    procesos.clear();
+
+    valoresIniciales();
+}
+
+void cargarAMemoria(int proceso, int bytes) {
+
+    int cantPaginas;
+    cantPaginas = ceil(bytes / cantPaginas);
+
+    Proceso proc;
+
+    for (int i = 0; i < cantPaginas; i++) {
+        ProcesoVirtual virt;
+
+        virt.idProceso = proceso;
+        virt.pagina = i + 1;
+        virt.timestamp = ++tiempo;
+
+        // conseguir marco de pagina
+    }
+
+    proc.idProceso = proceso;
+    proc.cantPaginas = cantPaginas;
+    proc.tiempoInicio = tiempo;
+}
+
 bool parsearInput(string linea) {
     stringstream ss;
+    string extra;
     char c;
-    bool valor = false;
+    bool valor = false; // para saber si acabar el programa o no
 
     ss << linea;
     ss >> c;
 
+    if (c != 'C') {
+        cout << linea << endl;
+    }
+
     switch (c) {
     case 'P':
+        int proceso, bytes;
+        cargarAMemoria(proceso, bytes);
         break;
     case 'A':
         break;
     case 'L':
         break;
     case 'C':
+        getline(ss, extra);
+        cout << extra << endl;
         break;
     case 'F':
+
+        // hacer todo el rollo
+
+        reiniciarValores();
         break;
     case 'E':
         valor = true;
@@ -80,6 +127,18 @@ bool parsearInput(string linea) {
 
 int main() {
 
+    ifstream entrada;
+    string linea;
+
     valoresIniciales();
+
+    entrada.open("");
+
+    if (entrada.is_open()) {
+
+    }
+
+    entrada.close();
+    
 
 }
