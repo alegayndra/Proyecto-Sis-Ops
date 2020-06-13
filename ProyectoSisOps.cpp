@@ -139,6 +139,12 @@ void liberarProceso(int proceso) {
             S[i] = NULL;
         }
     }
+
+    for(int i = 0; i < procesos.size(); i++){
+        if(proceso == procesos[i].idProceso){
+            procesos[i].tiempoFinal = tiempo;
+        }
+    }
 }
 
 void finCiclo() {
