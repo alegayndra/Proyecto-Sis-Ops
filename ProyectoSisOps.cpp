@@ -73,9 +73,9 @@ void cargarAMemoria(int bytes, int proceso) {
         Proceso proc;
 
         for (int i = 0; i < cantPaginas; i++) {
-            bool memoriaEncontrada = false;
+            bool paginaEncontrada = false;
             int pos;
-            for (int j = 0; !memoriaEncontrada && j < M.size(); j++) {
+            for (int j = 0; !paginaEncontrada && j < M.size(); j++) {
                 if (S[j] == NULL) {
                     S[j] = new ProcesoVirtual;
                     S[j]->idProceso = proceso;
@@ -83,27 +83,27 @@ void cargarAMemoria(int bytes, int proceso) {
                     S[j]->pagina = j;
 
                     pos = j;
-                    memoriaEncontrada = true;
+                    paginaEncontrada = true;
+
+                    // conseguir marco de pagina
+                    bool memoriaEncontrada = false;
+                    for (int j = 0; !memoriaEncontrada && j < M.size(); j++) {
+                        if (M[j] == NULL) {
+                            M[j] = new ProcesoReal;
+                            M[j]->idProceso = proceso;
+                            M[j]->timestamp = tiempo;
+                            M[j]->cantBytes = (bytes > tamPagina) ? tamPagina : bytes;
+
+                            bytes -= tamPagina;
+                            S[pos]->marcoDePagina = j;
+                            memoriaEncontrada = true;
+                        }
+                    }
+
+                    if (!memoriaEncontrada) {
+                        // swapping
+                    }
                 }
-            }
-
-            // conseguir marco de pagina
-            memoriaEncontrada = false;
-            for (int j = 0; !memoriaEncontrada && j < M.size(); j++) {
-                if (M[j] == NULL) {
-                    M[j] = new ProcesoReal;
-                    M[j]->idProceso = proceso;
-                    M[j]->timestamp = tiempo;
-                    M[j]->cantBytes = (bytes > tamPagina) ? tamPagina : bytes;
-
-                    bytes -= tamPagina;
-                    S[pos]->marcoDePagina = j;
-                    memoriaEncontrada = true;
-                }
-            }
-
-            if (!memoriaEncontrada) {
-                // swapping
             }
         }
 
