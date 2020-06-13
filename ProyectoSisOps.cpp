@@ -33,6 +33,7 @@ struct Proceso {
     double tiempoInicio;
     double tiempoFinal;
     int cantPaginas;
+    int cantPageFaults;
 };
 
 // Vectores de memoria;
@@ -200,7 +201,22 @@ void liberarProceso(int proceso) {
 }
 
 void finCiclo() {
+    int turnaroundProm = 0;
 
+    //El tiempo final es de -1
+    for(int i = 0; i < procesos.size(); i++){
+        if(procesos[i].tiempoFinal == -1){
+            procesos[i].tiempoFinal = tiempo;
+        }
+        cout << "Turnaround del proceso " << procesos[i].idProceso << " es = " << procesos[i].tiempoFinal - procesos[i].tiempoInicio << endl;
+        turnaroundProm += (procesos[i].tiempoFinal - procesos[i].tiempoInicio);
+    }
+    turnaroundProm /= procesos.size();
+    cout << "Turnaround promedio es = " << turnaroundProm << endl;
+    for(int i = 0; i < procesos.size(); i++){
+        cout << "La cantidad de Page Faults del proceso " << procesos[i].idProceso << " es = " << procesos[i].cantPageFaults << endl;
+    }
+    cout << "La cantidad de swaps es = " << cantSwaps << endl;
 }
 
 /*Funcion utilizada para procesar la entrada, y saber que instrucción se quiere ejecutar
