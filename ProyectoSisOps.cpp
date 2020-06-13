@@ -162,32 +162,41 @@ void cargarAMemoria(int bytes, int proceso) {
     }
 }
 
-/*Funcion utilizada para liberar el proceso de memoria
+/*Funcion utilizada para acceder a una direccion de memoria de un proceso dado
     Parámetros:
-        -Proceso: Representa el ID del proceso a liberar
+        -direccion: Direccion virtual
+        -proceso: ID del proceso
+        -modificar: condicion para saber si fue modificado
 */
 void accederADireccion(int direccion, int proceso, bool modificar) {
+    cout << "Obtener la direccion real correspondiente a la direccion virtual " << direccion << " del proceso " << proceso << endl;
     tiempo += 0.1;
     for(int i = 0; i < procesos.size(); i++){
+        //Recorrer los procesos hasta encontrar el indicado con ID
         if(proceso == procesos[i].idProceso){
+            //Calcular pagina
             int pagina = direccion / procesos[i].tamProceso;
+
+            //Recorrer las paginas hasta que encontremos la pagina donde esta el proceso
             for(int j = 0; j < 256; j++){
                 if(S[j] != NULL && S[j]->idProceso == proceso && S[j]->pagina == pagina){
-                    if(S[j]->marcoDePagina > -1){
-                        int dirReal = procesos[j].tamProceso % tamPagina + S[j]->marcoDePagina * tamPagina;
-                        if(politica == "LRU"){
-                            M[S[j]->marcoDePagina]->timestamp = tiempo;
-                        }
-
-                    }
-                    else{
+                    //Checamos si el marco de página [MODIFICAR COMENT]
+                    if(S[j]->marcoDePagina == -1){
                         swapping(j);
                         procesos[i].cantPageFaults++;
                     }
+                    int dirReal = procesos[j].tamProceso % tamPagina + S[j]->marcoDePagina * tamPagina;
+                    
+                    //Ajustar cambios en memoria conforme a LRU
+                    if(politica == "LRU"){
+                        M[S[j]->marcoDePagina]->timestamp = tiempo;
+                    }
+                    cout << "Direccion Virtual es = " << direccion << " y direccion real = " << dirReal << endl;
+                    return;
                 }
             }
         }
-    }
+    } 
 }
 
 /*Funcion utilizada para liberar el proceso de memoria
