@@ -181,8 +181,8 @@ bool parsearInput(string linea) {
         reiniciarValores();
         break;
     case 'E':
-
-        // mensaje de despedida
+        //Suena dubstep en el fondo
+        cout << "aZtaaaa la procSimaaaaaa" << endl;
 
         valor = false;
         break;
