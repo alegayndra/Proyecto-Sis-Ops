@@ -15,6 +15,7 @@ int main() {
         S.push_back(false);
         S.push_back(false);
     }
+    //alo
 
     cout << "M size: !" << M.size() << "\n";
     cout << "S size: !" << S.size() <<"\n";
