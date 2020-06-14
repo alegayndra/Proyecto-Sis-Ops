@@ -8,8 +8,14 @@
     Autores del programa:
     - Alberto García Viegas | A00822649
     - José Carlos
-    - Paola
-    - Tanya
+    - Paola Masiel Rijo Martinez | A00823735
+    - Tanya Yaretzi
+
+    Lenguaje y versión: C++11
+
+    Lineas de Código:
+    - Totales: 540
+    - Sin comentarios: 427
 */
 
 #include <iostream>
