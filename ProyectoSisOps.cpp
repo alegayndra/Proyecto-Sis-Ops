@@ -103,10 +103,7 @@ void swapping(int posicion) {
             M[posReal]->timestamp = tiempo;
             M[posReal]->cantBytes = S[posicion]->cantBytes;
 
-            cout << "La pagina " << posReal << " del proceso " << proceso << " fue swappeada al marco " << S[i]->marcoDePagina << endl;
-        }
-        else{
-            cout << "El proceso no cabe en memoria virtual" << endl;
+            cout << "La pagina " << S[posicion]->pagina << " del proceso " << S[posicion]->idProceso << " fue swappeada al marco " << S[posicion]->marcoDePagina << endl;
         }
     }
 }
@@ -118,6 +115,8 @@ void swapping(int posicion) {
         -proceso: representa el ID del proceso
  */
 void cargarAMemoria(int bytes, int proceso) {
+
+    cout << "Cargando memoria de " << proceso << endl;
 
     if (bytes <= 2048) {
 
@@ -138,12 +137,12 @@ void cargarAMemoria(int bytes, int proceso) {
             for (int i = 0; i < cantPaginas; i++) {
                 paginaEncontrada = false;
 
-                for (int j = 0; !paginaEncontrada && j < M.size(); j++) {
+                for (int j = 0; !paginaEncontrada && j < 256; j++) {
                     if (S[j] == NULL) {
                         S[j] = new ProcesoVirtual;
                         S[j]->idProceso = proceso;
                         S[j]->timestamp = ++tiempo;
-                        S[j]->pagina = j;
+                        S[j]->pagina = i;
 
                         paginaEncontrada = true;
 
@@ -171,7 +170,7 @@ void cargarAMemoria(int bytes, int proceso) {
                         }
 
                         if (!memoriaEncontrada) {
-                            swapping(i);
+                            swapping(j);
                         }
                     }
                 }
@@ -201,8 +200,6 @@ void cargarAMemoria(int bytes, int proceso) {
     else {
         cout << "ERROR: No cabe el proceso en memoria real\n";
     }
-
-    
 }
 
 /*
@@ -227,13 +224,11 @@ void accederADireccion(int direccion, int proceso, bool modificar) {
 
                     //Checamos si el marco de página [MODIFICAR COMENT]
                     if(S[j]->marcoDePagina == -1){
-                        cout << "Page fault\n";
                         swapping(j);
                         procesos[i].cantPageFaults++;
-                        cout << procesos[i].cantPageFaults << endl;
                     }
 
-                    int dirReal = direccion % tamPagina + S[j]->marcoDePagina * tamPagina;
+                    int dirReal = direccion % tamPagina + S[j]->marcoDePagina * tamPagina + ((direccion % tamPagina == 0 && direccion != 0) ? tamPagina : 0);
                     
                     //Ajustar cambios en memoria conforme a LRU
                     if(politica == "LRU"){
@@ -402,7 +397,7 @@ bool parsearInput(string linea) {
 int main() {
 
     ifstream entrada;
-    string linea, nombreArch = "PDF.txt";
+    string linea, nombreArch = "Swapping.txt";
     bool seguir;
 
     valoresIniciales();
