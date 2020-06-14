@@ -260,7 +260,7 @@ void accederADireccion(int direccion, int proceso, bool modificar) {
                         M[S[j]->marcoDePagina]->timestamp = tiempo;
                     }
 
-                    cout << "Direccion Virtual es = " << direccion << " y direccion real = " << dirReal << endl;
+                    cout << "Direccion Virtual es = " << direccion << " y Direccion Real = " << dirReal << endl;
                
                     return;
                 }
@@ -283,7 +283,7 @@ void liberarProceso(int proceso) {
     vector <int> paginas;
 
     //Desplegar marcos de pagina ocupaos por el proceso
-    cout << "Liberar los marcos de página ocupados por el proceso " << proceso << endl;
+    cout << "Liberar los marcos de pagina ocupados por el proceso " << proceso << endl;
     
     //Ciclo para liberar los marcos de página ocupados por el proceso en la memoria real
     for(int i = 0; i < 128; i++){
@@ -318,14 +318,14 @@ void liberarProceso(int proceso) {
         cout << "Se liberan los marcos de memoria real: [" << mostrarRangos(marcosDePagina) << "]" << endl;
     }
     else{
-        cout << "El proceso no está ocupado en ningún marco de página\n";
+        cout << "El proceso no esta ocupando ningun marco de pagina\n";
     }
 
     if(paginas.size() > 0){
-        cout << "Se liberan los marcos del área de swapping: [" << mostrarRangos(paginas) << "]" << endl;
+        cout << "Se liberan los marcos del area de swapping: [" << mostrarRangos(paginas) << "]" << endl;
     }
     else{
-        cout << "El proceso no está ocupando ninguna página\n";
+        cout << "El proceso no esta ocupando ninguna pagina\n";
     }
 }
 
@@ -359,7 +359,7 @@ void finCiclo() {
 }
 
 /*
-    Funcion utilizada para procesar la entrada, y saber que instrucción se quiere ejecutar
+    Funcion utilizada para procesar la entrada y saber que instrucción se quiere ejecutar
     Parámetros:
         -línea: La instrucción a procesar
     Output:
@@ -375,33 +375,34 @@ bool parsearInput(string linea) {
     ss << linea;
     ss >> c;
 
-    cout << linea << endl; 
-
     switch (c) {
     case 'P':
         ss >> n >> p;
+        cout << "P " << n << " " << p << endl;
         cargarAMemoria(stoi(n), stoi(p));
         break;
     case 'A':
         ss >> d >> p >> m;
+        cout << "A " << d << " " << p << " " << m <<endl;
         accederADireccion(stoi(d), stoi(p), stoi(m));
         break;
     case 'L':
         ss >> p;
+        cout << "L " << p << endl;
         liberarProceso(stoi(p));
         break;
     case 'C':
-        /*getline(ss, extra);
-        cout << extra << endl;*/
+        cout << linea << endl;
         break;
     case 'F':
+        cout << "F\n";
         finCiclo();
         reiniciarValores();
         break;
     case 'E':
         //Suena dubstep en el fondo
+        cout << "E\n";
         cout << "aZtaaaa la procSimaaaaaa" << endl;
-
         valor = false;
         break;
     default:
