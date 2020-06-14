@@ -70,6 +70,11 @@ void reiniciarValores() {
     valoresIniciales();
 }
 
+/*
+    Función para hacer el reemplazo de páginas
+    Parámetros:
+    - posicion (int): posicion en S de la página de un proceso a la cual se le quiere asignar algún marco de página
+*/
 void swapping(int posicion) {
 
     cantSwaps++;
@@ -106,7 +111,8 @@ void swapping(int posicion) {
     }
 }
 
-/*Función utilizada para cargar un procesos a memoria
+/*
+    Función utilizada para cargar un procesos a memoria
     Parámetros:
         -bytes: representa el tamaño del proceso
         -proceso: representa el ID del proceso
@@ -199,7 +205,8 @@ void cargarAMemoria(int bytes, int proceso) {
     
 }
 
-/*Funcion utilizada para acceder a una direccion de memoria de un proceso dado
+/*
+    Funcion utilizada para acceder a una direccion de memoria de un proceso dado
     Parámetros:
         -direccion: Direccion virtual
         -proceso: ID del proceso
@@ -219,8 +226,10 @@ void accederADireccion(int direccion, int proceso, bool modificar) {
                 if(S[j] != NULL && S[j]->idProceso == proceso && S[j]->pagina == pagina){
                     //Checamos si el marco de página [MODIFICAR COMENT]
                     if(S[j]->marcoDePagina == -1){
+                        cout << "Page fault\n";
                         swapping(j);
                         procesos[i].cantPageFaults++;
+                        cout << procesos[i].cantPageFaults << endl;
                     }
                     int dirReal = procesos[j].tamProceso % tamPagina + S[j]->marcoDePagina * tamPagina;
                     
@@ -236,7 +245,8 @@ void accederADireccion(int direccion, int proceso, bool modificar) {
     } 
 }
 
-/*Funcion utilizada para liberar el proceso de memoria
+/*
+    Funcion utilizada para liberar el proceso de memoria
     Parámetros:
         -Proceso: Representa el ID del proceso a liberar
 */
@@ -278,41 +288,52 @@ void liberarProceso(int proceso) {
         }
     }
 
-    cout << "Se liberan los marcos de memoria real: [" << proceso << endl;
+    cout << "Se liberan los marcos de memoria real: [";
     for (int i = 0; i < marcosDePagina.size(); i++) {
-            cout << marcosDePagina[i] << ", ";
+            cout << marcosDePagina[i] << ",";
     }
-    cout << " ]" << endl;
+    cout << "]" << endl;
 
 
-    cout << "Se liberan los marcos del área de swapping: [" << proceso << endl;
+    cout << "Se liberan los marcos del área de swapping: [";
     for (int i = 0; i < paginas.size(); i++) {
-        cout << paginas[i] << ", ";
+        cout << paginas[i] << ",";
     }
-    cout << " ]" << endl;
+    cout << "]" << endl;
 
 }
 
+/* Funcion utilizada */
 void finCiclo() {
-    int turnaroundProm = 0;
 
-    //El tiempo final es de -1
-    for(int i = 0; i < procesos.size(); i++){
-        if(procesos[i].tiempoFinal == -1){
-            procesos[i].tiempoFinal = tiempo;
+    if (procesos.size() > 0) {
+        int turnaroundProm = 0;
+
+        //El tiempo final es de -1
+        for (int i = 0; i < procesos.size(); i++) {
+            if (procesos[i].tiempoFinal == -1) {
+                procesos[i].tiempoFinal = tiempo;
+            }
+            cout << "Turnaround del proceso " << procesos[i].idProceso << " es = " << procesos[i].tiempoFinal - procesos[i].tiempoInicio << endl;
+            turnaroundProm += (procesos[i].tiempoFinal - procesos[i].tiempoInicio);
         }
-        cout << "Turnaround del proceso " << procesos[i].idProceso << " es = " << procesos[i].tiempoFinal - procesos[i].tiempoInicio << endl;
-        turnaroundProm += (procesos[i].tiempoFinal - procesos[i].tiempoInicio);
+
+        turnaroundProm /= procesos.size();
+        cout << "Turnaround promedio es = " << turnaroundProm << endl;
+
+        for (int i = 0; i < procesos.size(); i++) {
+            cout << "La cantidad de Page Faults del proceso " << procesos[i].idProceso << " es = " << procesos[i].cantPageFaults << endl;
+        }
+
+        cout << "La cantidad de swaps es = " << cantSwaps << endl;
     }
-    turnaroundProm /= procesos.size();
-    cout << "Turnaround promedio es = " << turnaroundProm << endl;
-    for(int i = 0; i < procesos.size(); i++){
-        cout << "La cantidad de Page Faults del proceso " << procesos[i].idProceso << " es = " << procesos[i].cantPageFaults << endl;
+    else {
+        cout << "ERROR: No se ha cargado a memoria ningun proceso\n";
     }
-    cout << "La cantidad de swaps es = " << cantSwaps << endl;
 }
 
-/*Funcion utilizada para procesar la entrada, y saber que instrucción se quiere ejecutar
+/*
+    Funcion utilizada para procesar la entrada, y saber que instrucción se quiere ejecutar
     Parámetros:
         -línea: La instrucción a procesar
     Output:
@@ -358,6 +379,7 @@ bool parsearInput(string linea) {
         valor = false;
         break;
     default:
+        cout << "ERROR: Instrucción invalida\n";
         break;
     }
     
