@@ -7,7 +7,9 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include <tgmath.h> 
+#include <limits.h>
+#include <tgmath.h>
+#include <climits> 
 
 using namespace std;
 
@@ -80,6 +82,7 @@ void swapping(int posicion) {
     double valor = INT_MAX;
     int posReal;
 
+    //Buscamos el valor más chico de timestamp
     for (int i = 0; i < 128; i++) {
         if (M[i] != NULL && valor > M[i]->timestamp) {
             valor = M[i]->timestamp;
@@ -98,6 +101,11 @@ void swapping(int posicion) {
             M[posReal]->idProceso = S[posicion]->idProceso;
             M[posReal]->timestamp = tiempo;
             M[posReal]->cantBytes = S[posicion]->cantBytes;
+
+            cout << "La pagina " << posReal << " del proceso " << proceso << " fue swappeada al marco " << S[i]->marcoDePagina << endl;
+        }
+        else{
+            cout << "El proceso no cabe en memoria virtual" << endl;
         }
     }
 }
@@ -110,7 +118,7 @@ void swapping(int posicion) {
 void cargarAMemoria(int bytes, int proceso) {
 
     int cantPaginas;
-    cantPaginas = ceil(bytes / cantPaginas);
+    cantPaginas = ceil(bytes / tamPagina);
 
     if (cantPaginas + S.size() <= 256) {
         Proceso proc;
@@ -163,6 +171,14 @@ void cargarAMemoria(int bytes, int proceso) {
     else {
         cout << "ERROR: No cabe el proceso en memoria virtual\n";
     }
+
+    cout << "Se asignaron los marcos de pagina [ ";
+    // for(int i = 0; i < 256; i++){
+    //     if(proceso == S[i]->idProceso){
+    //         cout << S[i]->marcoDePagina << ", ";
+    //     }
+    // }
+    cout << " ]" << endl;
 }
 
 /*Funcion utilizada para acceder a una direccion de memoria de un proceso dado
@@ -213,21 +229,23 @@ void liberarProceso(int proceso) {
     //Utilizado para registrar las pag. a liberar
     vector <int> paginas;
 
+    //Desplegar marcos de pagina ocupaos por el proceso
     cout << "Liberar los marcos de página ocupados por el proceso " << proceso << endl;
-
+    
     //Ciclo para liberar los marcos de página ocupados por el proceso en la memoria real
     for(int i = 0; i < 128; i++){
-        if(proceso == M[i]->idProceso){
+        if(M[i] != NULL && proceso == (M[i]->idProceso)){
             marcosDePagina.push_back(i);
             tiempo += 0.1;
             delete M[i];
             M[i] = NULL;
+            
         }
     }
-
+ 
     //Ciclo para liberar las páginas ocupadas por el proceso en la memoria virtual     
     for(int i = 0; i < 256; i++){
-        if(proceso == S[i]->idProceso){
+        if(S[i] != NULL && proceso == S[i]->idProceso){
             paginas.push_back(i);
             tiempo += 0.1;
             delete S[i];
@@ -326,7 +344,7 @@ bool parsearInput(string linea) {
 int main() {
 
     ifstream entrada;
-    string linea, nombreArch;
+    string linea, nombreArch = "Laputaquemasaplauda.txt";
     bool seguir;
 
     valoresIniciales();
