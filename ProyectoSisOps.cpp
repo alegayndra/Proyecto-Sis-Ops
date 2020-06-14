@@ -8,7 +8,8 @@
 #include <fstream>
 #include <sstream>
 #include <limits.h>
-#include <tgmath.h> 
+#include <tgmath.h>
+#include <climits> 
 
 using namespace std;
 
@@ -169,11 +170,11 @@ void cargarAMemoria(int bytes, int proceso) {
     }
 
     cout << "Se asignaron los marcos de pagina [ ";
-    for(int i = 0; i < 256; i++){
-        if(proceso == S[i]->idProceso){
-            cout << S[i]->marcoDePagina << ", ";
-        }
-    }
+    // for(int i = 0; i < 256; i++){
+    //     if(proceso == S[i]->idProceso){
+    //         cout << S[i]->marcoDePagina << ", ";
+    //     }
+    // }
     cout << " ]" << endl;
 }
 
@@ -230,17 +231,18 @@ void liberarProceso(int proceso) {
      
     //Ciclo para liberar los marcos de página ocupados por el proceso en la memoria real
     for(int i = 0; i < 128; i++){
-        if(proceso == M[i]->idProceso){
+        if(M[i] != NULL && proceso == (M[i]->idProceso)){
             marcosDePagina.push_back(i);
             tiempo += 0.1;
             delete M[i];
             M[i] = NULL;
+            
         }
     }
-
+ 
     //Ciclo para liberar las páginas ocupadas por el proceso en la memoria virtual     
     for(int i = 0; i < 256; i++){
-        if(proceso == S[i]->idProceso){
+        if(S[i] != NULL && proceso == S[i]->idProceso){
             paginas.push_back(i);
             tiempo += 0.1;
             delete S[i];
@@ -338,7 +340,7 @@ int main() {
 
     valoresIniciales();
 
-    entrada.open("ArchivoTrabajo-1.txt");
+    entrada.open("Laputaquemasaplauda.txt");
 
     if (entrada.is_open()) {
         do {
