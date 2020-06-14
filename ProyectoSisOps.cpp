@@ -312,7 +312,7 @@ void liberarProceso(int proceso) {
 void finCiclo() {
 
     if (procesos.size() > 0) {
-        int turnaroundProm = 0;
+        double turnaroundProm = 0;
 
         //El tiempo final es de -1
         for (int i = 0; i < procesos.size(); i++) {
@@ -323,7 +323,7 @@ void finCiclo() {
             turnaroundProm += (procesos[i].tiempoFinal - procesos[i].tiempoInicio);
         }
 
-        turnaroundProm /= procesos.size();
+        turnaroundProm /= double(procesos.size());
         cout << "Turnaround promedio es = " << turnaroundProm << endl;
 
         for (int i = 0; i < procesos.size(); i++) {
@@ -397,14 +397,18 @@ bool parsearInput(string linea) {
 int main() {
 
     ifstream entrada;
-    string linea, nombreArch = "Swapping.txt";
+    string linea, nombreArch;
     bool seguir;
+
+    cout << "Nombre archivo\n";
+    cin >> nombreArch;
 
     valoresIniciales();
 
     entrada.open(nombreArch);
 
     if (entrada.is_open()) {
+        cout << "LRU\n";
         politica = "LRU";
         do {
             getline(entrada, linea);
@@ -419,6 +423,7 @@ int main() {
     entrada.open(nombreArch);
 
     if (entrada.is_open()) {
+        cout << "FIFO\n";
         politica = "FIFO";
         do {
             getline(entrada, linea);
