@@ -1,7 +1,3 @@
-// ProyectoSisOps.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
-//Librerías auxiliares
 #include <iostream>
 #include <vector>
 #include <string>
@@ -117,70 +113,81 @@ void swapping(int posicion) {
  */
 void cargarAMemoria(int bytes, int proceso) {
 
-    int cantPaginas;
-    Proceso proc;
-    bool paginaEncontrada;
-    int bytesExtra = bytes;
+    if (bytes <= 2048) {
+        int cantPaginas;
+        Proceso proc;
+        bool paginaEncontrada;
+        int bytesExtra = bytes;
 
-    cantPaginas = ceil(bytes / tamPagina);
+        cantPaginas = ceil(bytes / tamPagina);
 
-    for (int i = 0; i < cantPaginas; i++) {
-        paginaEncontrada = false;
+        for (int i = 0; i < cantPaginas; i++) {
+            paginaEncontrada = false;
 
-        for (int j = 0; !paginaEncontrada && j < M.size(); j++) {
-            if (S[j] == NULL) {
-                S[j] = new ProcesoVirtual;
-                S[j]->idProceso = proceso;
-                S[j]->timestamp = ++tiempo;
-                S[j]->pagina = j;
+            for (int j = 0; !paginaEncontrada && j < M.size(); j++) {
+                if (S[j] == NULL) {
+                    S[j] = new ProcesoVirtual;
+                    S[j]->idProceso = proceso;
+                    S[j]->timestamp = ++tiempo;
+                    S[j]->pagina = j;
 
-                paginaEncontrada = true;
+                    paginaEncontrada = true;
 
-                // conseguir marco de pagina
-                bool memoriaEncontrada = false;
-                for (int j = 0; !memoriaEncontrada && j < M.size(); j++) {
-                    if (M[j] == NULL) {
-                        M[j] = new ProcesoReal;
-                        M[j]->idProceso = proceso;
-                        M[j]->timestamp = tiempo;
-                        M[j]->cantBytes = (bytesExtra > tamPagina) ? tamPagina : bytesExtra;
+                    // conseguir marco de pagina
+                    bool memoriaEncontrada = false;
+                    for (int j = 0; !memoriaEncontrada && j < M.size(); j++) {
+                        if (M[j] == NULL) {
+                            M[j] = new ProcesoReal;
+                            M[j]->idProceso = proceso;
+                            M[j]->timestamp = tiempo;
+                            M[j]->cantBytes = (bytesExtra > tamPagina) ? tamPagina : bytesExtra;
 
-                        S[i]->cantBytes = (bytesExtra > tamPagina) ? tamPagina : bytesExtra;
-                        S[i]->marcoDePagina = j;
+                            S[i]->cantBytes = (bytesExtra > tamPagina) ? tamPagina : bytesExtra;
+                            S[i]->marcoDePagina = j;
+                            cout << "\nAsignando valor a marco de pagina\n";
+                            cout << "Marco pagina: " << S[i]->marcoDePagina << endl;
+                            cout << "j: " << j << endl;
+                            cout << "valor asignado\n";
 
-                        bytesExtra -= tamPagina;
-                            
-                        memoriaEncontrada = true;
+                            bytesExtra -= tamPagina;
+
+                            memoriaEncontrada = true;
+                        }
+                    }
+
+                    if (!memoriaEncontrada) {
+                        swapping(i);
                     }
                 }
+            }
+        }
 
-                if (!memoriaEncontrada) {
-                    swapping(i);
+        if (paginaEncontrada) {
+            proc.idProceso = proceso;
+            proc.cantPaginas = cantPaginas;
+            proc.tiempoInicio = tiempo;
+            proc.tamProceso = bytes;
+            proc.tiempoFinal = -1;
+
+            procesos.push_back(proc);
+
+            cout << "Se asignaron los marcos de pagina [ ";
+            for (int i = 0; i < 128; i++) {
+                if (M[i] != NULL && proceso == M[i]->idProceso) {
+                    cout << i << ", ";
                 }
             }
+            cout << " ]" << endl;
         }
-    }
-
-    if (paginaEncontrada) {
-        proc.idProceso = proceso;
-        proc.cantPaginas = cantPaginas;
-        proc.tiempoInicio = tiempo;
-        proc.tamProceso = bytes;
-        proc.tiempoFinal = -1;
-
-        procesos.push_back(proc);
-
-        cout << "Se asignaron los marcos de pagina [ ";
-        for (int i = 0; i < 256; i++) {
-            if (S[i] != NULL && proceso == S[i]->idProceso) {
-                cout << S[i]->marcoDePagina << ", ";
-            }
+        else {
+            cout << "ERROR: No cabe el proceso en memoria virtual\n";
         }
-        cout << " ]" << endl;
     }
     else {
-        cout << "ERROR: No cabe el proceso en memoria virtual\n";
+        cout << "ERROR: No cabe el proceso en memoria real\n";
     }
+
+    
 }
 
 /*Funcion utilizada para acceder a una direccion de memoria de un proceso dado
