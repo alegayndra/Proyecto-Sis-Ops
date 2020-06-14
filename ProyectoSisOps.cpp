@@ -201,6 +201,8 @@ void liberarProceso(int proceso) {
     //Utilizado para registrar las pag. a liberar
     vector <int> paginas;
 
+    cout << "Liberar los marcos de página ocupados por el proceso " << proceso << endl;
+
     //Ciclo para liberar los marcos de página ocupados por el proceso en la memoria real
     for(int i = 0; i < 128; i++){
         if(proceso == M[i]->idProceso){
@@ -227,6 +229,12 @@ void liberarProceso(int proceso) {
             procesos[i].tiempoFinal = tiempo;
         }
     }
+
+    cout << "Se liberan los marcos de memoria real: [" << proceso << endl;
+
+
+    cout << "Se liberan los marcos del área de swapping: [" << proceso << endl;
+
 }
 
 void finCiclo() {
@@ -306,14 +314,29 @@ bool parsearInput(string linea) {
 int main() {
 
     ifstream entrada;
-    string linea;
+    string linea, nombreArch;
     bool seguir;
 
     valoresIniciales();
 
-    entrada.open("");
+    entrada.open(nombreArch);
 
     if (entrada.is_open()) {
+        politica = "LRU";
+        do {
+            getline(entrada, linea);
+            seguir = parsearInput(linea);
+        } while (seguir);
+    }
+
+    entrada.close();
+
+    reiniciarValores();
+
+    entrada.open(nombreArch);
+
+    if (entrada.is_open()) {
+        politica = "FIFO";
         do {
             getline(entrada, linea);
             seguir = parsearInput(linea);
