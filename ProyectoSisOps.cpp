@@ -219,11 +219,12 @@ void accederADireccion(int direccion, int proceso, bool modificar) {
         //Recorrer los procesos hasta encontrar el indicado con ID
         if(proceso == procesos[i].idProceso){
             //Calcular pagina
-            int pagina = (direccion / tamPagina) - (direccion % tamPagina == 0 && direccion != 0) ? 1 : 0;
+            int pagina = (direccion / tamPagina) - ((direccion % tamPagina == 0 && direccion != 0) ? 1 : 0);
 
             //Recorrer las paginas hasta que encontremos la pagina donde esta el proceso
             for(int j = 0; j < 256; j++){
                 if(S[j] != NULL && S[j]->idProceso == proceso && S[j]->pagina == pagina){
+
                     //Checamos si el marco de página [MODIFICAR COMENT]
                     if(S[j]->marcoDePagina == -1){
                         cout << "Page fault\n";
@@ -231,13 +232,16 @@ void accederADireccion(int direccion, int proceso, bool modificar) {
                         procesos[i].cantPageFaults++;
                         cout << procesos[i].cantPageFaults << endl;
                     }
-                    int dirReal = procesos[j].tamProceso % tamPagina + S[j]->marcoDePagina * tamPagina;
+
+                    int dirReal = direccion % tamPagina + S[j]->marcoDePagina * tamPagina;
                     
                     //Ajustar cambios en memoria conforme a LRU
                     if(politica == "LRU"){
                         M[S[j]->marcoDePagina]->timestamp = tiempo;
                     }
+
                     cout << "Direccion Virtual es = " << direccion << " y direccion real = " << dirReal << endl;
+                    
                     return;
                 }
             }
@@ -398,7 +402,7 @@ bool parsearInput(string linea) {
 int main() {
 
     ifstream entrada;
-    string linea, nombreArch = "ArchivoTrabajo-1.txt";
+    string linea, nombreArch = "PDF.txt";
     bool seguir;
 
     valoresIniciales();
