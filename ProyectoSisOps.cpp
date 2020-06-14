@@ -144,10 +144,11 @@ void cargarAMemoria(int bytes, int proceso) {
 
                             S[i]->cantBytes = (bytesExtra > tamPagina) ? tamPagina : bytesExtra;
                             S[i]->marcoDePagina = j;
-                            cout << "\nAsignando valor a marco de pagina\n";
+
+                            /*cout << "\nAsignando valor a marco de pagina\n";
                             cout << "Marco pagina: " << S[i]->marcoDePagina << endl;
                             cout << "j: " << j << endl;
-                            cout << "valor asignado\n";
+                            cout << "valor asignado\n";*/
 
                             bytesExtra -= tamPagina;
 
@@ -168,6 +169,7 @@ void cargarAMemoria(int bytes, int proceso) {
             proc.tiempoInicio = tiempo;
             proc.tamProceso = bytes;
             proc.tiempoFinal = -1;
+            proc.cantPageFaults = 0;
 
             procesos.push_back(proc);
 
