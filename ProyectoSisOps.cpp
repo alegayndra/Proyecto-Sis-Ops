@@ -6,9 +6,9 @@
     S es de 4096 bytes y M de 2048 bytes. El tamaño de página es de 16, por lo que hicimos los vectores M y S de 128 y 256 de tamaño respectivamente.
 
     Autores del programa:
-    - Alberto García Viegas | A00822649
-    - José Carlos
-    - Paola Masiel Rijo Martinez | A00823735
+    - Alberto García Viegas             | A00822649
+    - José Carlos del Castillo Estrada  | A00822554
+    - Paola Masiel Rijo Martinez        | A00823735
     - Tanya Yaretzi
 
     Lenguaje y versión: C++11
