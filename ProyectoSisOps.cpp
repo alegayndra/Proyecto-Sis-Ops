@@ -120,6 +120,7 @@ void cargarAMemoria(int bytes, int proceso) {
     int cantPaginas;
     Proceso proc;
     bool paginaEncontrada;
+    int bytesExtra = bytes;
 
     cantPaginas = ceil(bytes / tamPagina);
 
@@ -142,12 +143,12 @@ void cargarAMemoria(int bytes, int proceso) {
                         M[j] = new ProcesoReal;
                         M[j]->idProceso = proceso;
                         M[j]->timestamp = tiempo;
-                        M[j]->cantBytes = (bytes > tamPagina) ? tamPagina : bytes;
+                        M[j]->cantBytes = (bytesExtra > tamPagina) ? tamPagina : bytesExtra;
 
-                        S[i]->cantBytes = (bytes > tamPagina) ? tamPagina : bytes;
+                        S[i]->cantBytes = (bytesExtra > tamPagina) ? tamPagina : bytesExtra;
                         S[i]->marcoDePagina = j;
 
-                        bytes -= tamPagina;
+                        bytesExtra -= tamPagina;
                             
                         memoriaEncontrada = true;
                     }
@@ -195,7 +196,7 @@ void accederADireccion(int direccion, int proceso, bool modificar) {
         //Recorrer los procesos hasta encontrar el indicado con ID
         if(proceso == procesos[i].idProceso){
             //Calcular pagina
-            int pagina = direccion / procesos[i].tamProceso;
+            int pagina = (direccion / tamPagina) - (direccion % tamPagina == 0 && direccion != 0) ? 1 : 0;
 
             //Recorrer las paginas hasta que encontremos la pagina donde esta el proceso
             for(int j = 0; j < 256; j++){
@@ -337,6 +338,8 @@ bool parsearInput(string linea) {
     default:
         break;
     }
+    
+    cout << endl;
 
     return valor;
 }
