@@ -118,48 +118,49 @@ void swapping(int posicion) {
 void cargarAMemoria(int bytes, int proceso) {
 
     int cantPaginas;
+    Proceso proc;
+    bool paginaEncontrada;
+
     cantPaginas = ceil(bytes / tamPagina);
 
-    if (cantPaginas + S.size() <= 256) {
-        Proceso proc;
+    for (int i = 0; i < cantPaginas; i++) {
+        paginaEncontrada = false;
 
-        for (int i = 0; i < cantPaginas; i++) {
-            bool paginaEncontrada = false;
+        for (int j = 0; !paginaEncontrada && j < M.size(); j++) {
+            if (S[j] == NULL) {
+                S[j] = new ProcesoVirtual;
+                S[j]->idProceso = proceso;
+                S[j]->timestamp = ++tiempo;
+                S[j]->pagina = j;
 
-            for (int j = 0; !paginaEncontrada && j < M.size(); j++) {
-                if (S[j] == NULL) {
-                    S[j] = new ProcesoVirtual;
-                    S[j]->idProceso = proceso;
-                    S[j]->timestamp = ++tiempo;
-                    S[j]->pagina = j;
+                paginaEncontrada = true;
 
-                    paginaEncontrada = true;
+                // conseguir marco de pagina
+                bool memoriaEncontrada = false;
+                for (int j = 0; !memoriaEncontrada && j < M.size(); j++) {
+                    if (M[j] == NULL) {
+                        M[j] = new ProcesoReal;
+                        M[j]->idProceso = proceso;
+                        M[j]->timestamp = tiempo;
+                        M[j]->cantBytes = (bytes > tamPagina) ? tamPagina : bytes;
 
-                    // conseguir marco de pagina
-                    bool memoriaEncontrada = false;
-                    for (int j = 0; !memoriaEncontrada && j < M.size(); j++) {
-                        if (M[j] == NULL) {
-                            M[j] = new ProcesoReal;
-                            M[j]->idProceso = proceso;
-                            M[j]->timestamp = tiempo;
-                            M[j]->cantBytes = (bytes > tamPagina) ? tamPagina : bytes;
+                        S[i]->cantBytes = (bytes > tamPagina) ? tamPagina : bytes;
+                        S[i]->marcoDePagina = j;
 
-                            S[i]->cantBytes = (bytes > tamPagina) ? tamPagina : bytes;
-                            S[i]->marcoDePagina = j;
-
-                            bytes -= tamPagina;
+                        bytes -= tamPagina;
                             
-                            memoriaEncontrada = true;
-                        }
+                        memoriaEncontrada = true;
                     }
+                }
 
-                    if (!memoriaEncontrada) {
-                        swapping(i);
-                    }
+                if (!memoriaEncontrada) {
+                    swapping(i);
                 }
             }
         }
+    }
 
+    if (paginaEncontrada) {
         proc.idProceso = proceso;
         proc.cantPaginas = cantPaginas;
         proc.tiempoInicio = tiempo;
@@ -344,7 +345,7 @@ bool parsearInput(string linea) {
 int main() {
 
     ifstream entrada;
-    string linea, nombreArch = "Laputaquemasaplauda.txt";
+    string linea, nombreArch = "ArchivoTrabajo-1.txt";
     bool seguir;
 
     valoresIniciales();
