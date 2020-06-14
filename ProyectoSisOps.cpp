@@ -7,6 +7,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <limits.h>
 #include <tgmath.h> 
 
 using namespace std;
@@ -81,6 +82,7 @@ void swapping(int posicion) {
     int posReal;
 
     for (int i = 0; i < 128; i++) {
+        //Buscamos el valor más chico de timestamp??????????????????????????????????????????????
         if (M[i] != NULL && valor > M[i]->timestamp) {
             valor = M[i]->timestamp;
             posReal = i;
@@ -98,6 +100,11 @@ void swapping(int posicion) {
             M[posReal]->idProceso = S[posicion]->idProceso;
             M[posReal]->timestamp = tiempo;
             M[posReal]->cantBytes = S[posicion]->cantBytes;
+
+            cout << "La pagina " << posReal << " del proceso " << proceso << " fue swappeada al marco " << S[i]->marcoDePagina << endl;
+        }
+        else{
+            cout << "El proceso no cabe en memoria virtual" << endl;
         }
     }
 }
@@ -160,6 +167,14 @@ void cargarAMemoria(int bytes, int proceso) {
 
         procesos.push_back(proc);
     }
+
+    cout << "Se asignaron los marcos de pagina [ ";
+    for(int i = 0; i < 256; i++){
+        if(proceso == S[i]->idProceso){
+            cout << S[i]->marcoDePagina << ", ";
+        }
+    }
+    cout << " ]" << endl;
 }
 
 /*Funcion utilizada para acceder a una direccion de memoria de un proceso dado
@@ -210,6 +225,9 @@ void liberarProceso(int proceso) {
     //Utilizado para registrar las pag. a liberar
     vector <int> paginas;
 
+    //Desplegar marcos de pagina ocupaos por el proceso
+    cout << "Liberar los marcos de página ocupados por el proceso " << proceso << endl;
+     
     //Ciclo para liberar los marcos de página ocupados por el proceso en la memoria real
     for(int i = 0; i < 128; i++){
         if(proceso == M[i]->idProceso){
@@ -320,7 +338,7 @@ int main() {
 
     valoresIniciales();
 
-    entrada.open("");
+    entrada.open("ArchivoTrabajo-1.txt");
 
     if (entrada.is_open()) {
         do {
