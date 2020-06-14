@@ -114,56 +114,63 @@ void swapping(int posicion) {
 void cargarAMemoria(int bytes, int proceso) {
 
     if (bytes <= 2048) {
-        int cantPaginas;
-        Proceso proc;
-        bool paginaEncontrada;
-        int bytesExtra = bytes;
 
-        cantPaginas = ceil(bytes / tamPagina);
+        int cantPaginasVirtLibres = 0;
+        int cantPaginas = ceil(bytes / tamPagina);
 
-        for (int i = 0; i < cantPaginas; i++) {
-            paginaEncontrada = false;
-
-            for (int j = 0; !paginaEncontrada && j < M.size(); j++) {
-                if (S[j] == NULL) {
-                    S[j] = new ProcesoVirtual;
-                    S[j]->idProceso = proceso;
-                    S[j]->timestamp = ++tiempo;
-                    S[j]->pagina = j;
-
-                    paginaEncontrada = true;
-
-                    // conseguir marco de pagina
-                    bool memoriaEncontrada = false;
-                    for (int j = 0; !memoriaEncontrada && j < M.size(); j++) {
-                        if (M[j] == NULL) {
-                            M[j] = new ProcesoReal;
-                            M[j]->idProceso = proceso;
-                            M[j]->timestamp = tiempo;
-                            M[j]->cantBytes = (bytesExtra > tamPagina) ? tamPagina : bytesExtra;
-
-                            S[i]->cantBytes = (bytesExtra > tamPagina) ? tamPagina : bytesExtra;
-                            S[i]->marcoDePagina = j;
-
-                            /*cout << "\nAsignando valor a marco de pagina\n";
-                            cout << "Marco pagina: " << S[i]->marcoDePagina << endl;
-                            cout << "j: " << j << endl;
-                            cout << "valor asignado\n";*/
-
-                            bytesExtra -= tamPagina;
-
-                            memoriaEncontrada = true;
-                        }
-                    }
-
-                    if (!memoriaEncontrada) {
-                        swapping(i);
-                    }
-                }
+        for (int i = 0; i < 256; i++) {
+            if (S[i] == NULL) {
+                cantPaginasVirtLibres++;
             }
         }
 
-        if (paginaEncontrada) {
+        if (cantPaginasVirtLibres >= cantPaginas) {
+            Proceso proc;
+            bool paginaEncontrada;
+            int bytesExtra = bytes;
+
+            for (int i = 0; i < cantPaginas; i++) {
+                paginaEncontrada = false;
+
+                for (int j = 0; !paginaEncontrada && j < M.size(); j++) {
+                    if (S[j] == NULL) {
+                        S[j] = new ProcesoVirtual;
+                        S[j]->idProceso = proceso;
+                        S[j]->timestamp = ++tiempo;
+                        S[j]->pagina = j;
+
+                        paginaEncontrada = true;
+
+                        // conseguir marco de pagina
+                        bool memoriaEncontrada = false;
+                        for (int j = 0; !memoriaEncontrada && j < M.size(); j++) {
+                            if (M[j] == NULL) {
+                                M[j] = new ProcesoReal;
+                                M[j]->idProceso = proceso;
+                                M[j]->timestamp = tiempo;
+                                M[j]->cantBytes = (bytesExtra > tamPagina) ? tamPagina : bytesExtra;
+
+                                S[i]->cantBytes = (bytesExtra > tamPagina) ? tamPagina : bytesExtra;
+                                S[i]->marcoDePagina = j;
+
+                                /*cout << "\nAsignando valor a marco de pagina\n";
+                                cout << "Marco pagina: " << S[i]->marcoDePagina << endl;
+                                cout << "j: " << j << endl;
+                                cout << "valor asignado\n";*/
+
+                                bytesExtra -= tamPagina;
+
+                                memoriaEncontrada = true;
+                            }
+                        }
+
+                        if (!memoriaEncontrada) {
+                            swapping(i);
+                        }
+                    }
+                }
+            }
+
             proc.idProceso = proceso;
             proc.cantPaginas = cantPaginas;
             proc.tiempoInicio = tiempo;
@@ -272,9 +279,17 @@ void liberarProceso(int proceso) {
     }
 
     cout << "Se liberan los marcos de memoria real: [" << proceso << endl;
+    for (int i = 0; i < marcosDePagina.size(); i++) {
+            cout << marcosDePagina[i] << ", ";
+    }
+    cout << " ]" << endl;
 
 
     cout << "Se liberan los marcos del área de swapping: [" << proceso << endl;
+    for (int i = 0; i < paginas.size(); i++) {
+        cout << paginas[i] << ", ";
+    }
+    cout << " ]" << endl;
 
 }
 
@@ -313,9 +328,7 @@ bool parsearInput(string linea) {
     ss << linea;
     ss >> c;
 
-    if (c != 'C') {
-        cout << linea << endl;
-    }
+    cout << linea << endl; 
 
     switch (c) {
     case 'P':
@@ -331,8 +344,8 @@ bool parsearInput(string linea) {
         liberarProceso(stoi(p));
         break;
     case 'C':
-        getline(ss, extra);
-        cout << extra << endl;
+        /*getline(ss, extra);
+        cout << extra << endl;*/
         break;
     case 'F':
         finCiclo();
