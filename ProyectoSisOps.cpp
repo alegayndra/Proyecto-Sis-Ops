@@ -7,7 +7,7 @@
 
     Autores del programa:
     - Alberto García Viegas | A00822649
-    - José Carlos
+    - José Carlos | A00822554
     - Paola
     - Tanya
 */
