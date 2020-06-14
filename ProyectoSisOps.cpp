@@ -112,7 +112,7 @@ void cargarAMemoria(int bytes, int proceso) {
     int cantPaginas;
     cantPaginas = ceil(bytes / cantPaginas);
 
-    if (cantPaginas + S.size() <= 2048) {
+    if (cantPaginas + S.size() <= 256) {
         Proceso proc;
 
         for (int i = 0; i < cantPaginas; i++) {
@@ -159,6 +159,9 @@ void cargarAMemoria(int bytes, int proceso) {
         proc.tiempoFinal = -1;
 
         procesos.push_back(proc);
+    }
+    else {
+        cout << "ERROR: No cabe el proceso en memoria virtual\n";
     }
 }
 
