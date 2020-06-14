@@ -46,6 +46,7 @@ vector<Proceso> procesos;
 double tiempo;
 int tamPagina;
 int cantSwaps;
+int cantPaginasVirtLibres;
 string politica;
 
 /*Funcion donde se inicializa como NULL los vectores (ya que son de apuntadores) */
@@ -56,6 +57,7 @@ void valoresIniciales() {
         S.push_back(NULL);
     }
 
+    cantPaginasVirtLibres = S.size();
     tiempo = 0;
     tamPagina = 16;
     cantSwaps = 0;
@@ -68,6 +70,36 @@ void reiniciarValores() {
     procesos.clear();
 
     valoresIniciales();
+}
+
+string mostrarRangos(vector<int> &vec) {
+    string extra = "";
+    for (int i = 0; i < vec.size(); i++) {
+        if (vec[i] == vec[i + 1] - 1) {
+            int inicio, fin;
+            inicio = vec[i];
+            fin = inicio;
+            i++;
+            while (i < vec.size() && fin + 1 == vec[i]) {
+                fin++;
+                i++;
+            }
+
+            extra += to_string(inicio) + "-" + to_string(fin);
+        }
+        else {
+            extra += to_string(vec[i]);
+        }
+
+        if (i < vec.size() - 1) {
+            extra += ", ";
+        }
+        else if (i == vec.size() - 2) {
+            extra += " y ";
+        }
+    }
+
+    return extra;
 }
 
 /*
@@ -116,18 +148,11 @@ void swapping(int posicion) {
  */
 void cargarAMemoria(int bytes, int proceso) {
 
-    cout << "Cargando memoria de " << proceso << endl;
+    //cout << "Cargando memoria de " << proceso << endl;
 
     if (bytes <= 2048) {
 
-        int cantPaginasVirtLibres = 0;
         int cantPaginas = ceil(bytes / tamPagina);
-
-        for (int i = 0; i < 256; i++) {
-            if (S[i] == NULL) {
-                cantPaginasVirtLibres++;
-            }
-        }
 
         if (cantPaginasVirtLibres >= cantPaginas) {
             Proceso proc;
@@ -144,6 +169,8 @@ void cargarAMemoria(int bytes, int proceso) {
                         S[j]->timestamp = ++tiempo;
                         S[j]->pagina = i;
 
+                        cantPaginasVirtLibres--;
+
                         paginaEncontrada = true;
 
                         // conseguir marco de pagina
@@ -157,11 +184,6 @@ void cargarAMemoria(int bytes, int proceso) {
 
                                 S[i]->cantBytes = (bytesExtra > tamPagina) ? tamPagina : bytesExtra;
                                 S[i]->marcoDePagina = j;
-
-                                /*cout << "\nAsignando valor a marco de pagina\n";
-                                cout << "Marco pagina: " << S[i]->marcoDePagina << endl;
-                                cout << "j: " << j << endl;
-                                cout << "valor asignado\n";*/
 
                                 bytesExtra -= tamPagina;
 
@@ -185,13 +207,15 @@ void cargarAMemoria(int bytes, int proceso) {
 
             procesos.push_back(proc);
 
-            cout << "Se asignaron los marcos de pagina [ ";
+            vector<int> marcos;
+
             for (int i = 0; i < 128; i++) {
                 if (M[i] != NULL && proceso == M[i]->idProceso) {
-                    cout << i << ", ";
+                    marcos.push_back(i);
                 }
             }
-            cout << " ]" << endl;
+
+            cout << "Se asignaron los marcos de pagina [" << mostrarRangos(marcos) << "]" << endl;
         }
         else {
             cout << "ERROR: No cabe el proceso en memoria virtual\n";
@@ -212,6 +236,7 @@ void cargarAMemoria(int bytes, int proceso) {
 void accederADireccion(int direccion, int proceso, bool modificar) {
     cout << "Obtener la direccion real correspondiente a la direccion virtual " << direccion << " del proceso " << proceso << endl;
     tiempo += 0.1;
+
     for(int i = 0; i < procesos.size(); i++){
         //Recorrer los procesos hasta encontrar el indicado con ID
         if(proceso == procesos[i].idProceso){
@@ -236,12 +261,13 @@ void accederADireccion(int direccion, int proceso, bool modificar) {
                     }
 
                     cout << "Direccion Virtual es = " << direccion << " y direccion real = " << dirReal << endl;
-                    
+               
                     return;
                 }
             }
         }
-    } 
+    }
+    cout << "ERROR: No se encontro la direccion de memoria dada\n";
 }
 
 /*
@@ -277,6 +303,7 @@ void liberarProceso(int proceso) {
             tiempo += 0.1;
             delete S[i];
             S[i] = NULL;
+            cantPaginasVirtLibres++;
         }
     }
 
@@ -286,22 +313,16 @@ void liberarProceso(int proceso) {
             procesos[i].tiempoFinal = tiempo;
         }
     }
+
     if(marcosDePagina.size() > 0){
-        cout << "Se liberan los marcos de memoria real: [";
-        for (int i = 0; i < marcosDePagina.size(); i++) {
-                cout << marcosDePagina[i] << ",";
-        }
-        cout << "]" << endl;
+        cout << "Se liberan los marcos de memoria real: [" << mostrarRangos(marcosDePagina) << "]" << endl;
     }
     else{
         cout << "El proceso no está ocupado en ningún marco de página\n";
     }
+
     if(paginas.size() > 0){
-        cout << "Se liberan los marcos del área de swapping: [";
-        for (int i = 0; i < paginas.size(); i++) {
-            cout << paginas[i] << ",";
-        }
-        cout << "]" << endl;
+        cout << "Se liberan los marcos del área de swapping: [" << mostrarRangos(paginas) << "]" << endl;
     }
     else{
         cout << "El proceso no está ocupando ninguna página\n";
