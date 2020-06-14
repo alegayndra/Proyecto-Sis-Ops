@@ -169,18 +169,18 @@ void cargarAMemoria(int bytes, int proceso) {
         proc.tiempoFinal = -1;
 
         procesos.push_back(proc);
+
+        cout << "Se asignaron los marcos de pagina [ ";
+        for (int i = 0; i < 256; i++) {
+            if (S[i] != NULL && proceso == S[i]->idProceso) {
+                cout << S[i]->marcoDePagina << ", ";
+            }
+        }
+        cout << " ]" << endl;
     }
     else {
         cout << "ERROR: No cabe el proceso en memoria virtual\n";
     }
-
-    cout << "Se asignaron los marcos de pagina [ ";
-    // for(int i = 0; i < 256; i++){
-    //     if(proceso == S[i]->idProceso){
-    //         cout << S[i]->marcoDePagina << ", ";
-    //     }
-    // }
-    cout << " ]" << endl;
 }
 
 /*Funcion utilizada para acceder a una direccion de memoria de un proceso dado
