@@ -287,20 +287,26 @@ void liberarProceso(int proceso) {
             procesos[i].tiempoFinal = tiempo;
         }
     }
-
-    cout << "Se liberan los marcos de memoria real: [";
-    for (int i = 0; i < marcosDePagina.size(); i++) {
-            cout << marcosDePagina[i] << ",";
+    if(marcosDePagina.size() > 0){
+        cout << "Se liberan los marcos de memoria real: [";
+        for (int i = 0; i < marcosDePagina.size(); i++) {
+                cout << marcosDePagina[i] << ",";
+        }
+        cout << "]" << endl;
     }
-    cout << "]" << endl;
-
-
-    cout << "Se liberan los marcos del área de swapping: [";
-    for (int i = 0; i < paginas.size(); i++) {
-        cout << paginas[i] << ",";
+    else{
+        cout << "El proceso no está ocupado en ningún marco de página\n";
     }
-    cout << "]" << endl;
-
+    if(paginas.size() > 0){
+        cout << "Se liberan los marcos del área de swapping: [";
+        for (int i = 0; i < paginas.size(); i++) {
+            cout << paginas[i] << ",";
+        }
+        cout << "]" << endl;
+    }
+    else{
+        cout << "El proceso no está ocupando ninguna página\n";
+    }
 }
 
 /* Funcion utilizada */
