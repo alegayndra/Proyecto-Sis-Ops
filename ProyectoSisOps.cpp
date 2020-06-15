@@ -57,7 +57,7 @@ vector<Proceso> procesos;
 double tiempo;                  // El tiempo que ha transcurrido desde que inicio la simulación
 int tamPagina;                  // El tamaño de página de las memorias
 int cantSwaps;                  // La cantidad total de swaps que han ocurrido en la simulación
-int tamañoTotal;            // Cantidad de bytes totales entre todos los procesos
+int tamanioTotal;            // Cantidad de bytes totales entre todos los procesos
 string politica;                // Politica de reemplazo que se estará ejecutando
 
 /* Funcion donde se inicializa como NULL los vectores (ya que son de apuntadores) */
@@ -74,7 +74,7 @@ void valoresIniciales() {
     tiempo = 0;
     tamPagina = 16;
     cantSwaps = 0;
-    tamañoTotal = 0;
+    tamanioTotal = 0;
 }
 
 /* Función utilizada para reiniciar los valores en la función de "fin" */
@@ -219,7 +219,7 @@ void borrarMemoriaVirtual(int proceso, int pagina) {
 void cargarAMemoria(int bytes, int proceso) {
 
     for (int i = 0; i < procesos.size(); i++) {
-        if (procesos[i].idProceso = proceso) {
+        if (procesos[i].idProceso == proceso) {
             cout << "ERROR: El proceso ya existe en memoria\n";
             return;
         }
@@ -231,10 +231,10 @@ void cargarAMemoria(int bytes, int proceso) {
         int cantPaginas = ceil(bytes / tamPagina) + ((bytes % tamPagina > 0) ? 1 : 0); // La cantidad de página que va a ocupar el nuevo proceso
 
         // Checa si el proceso a cargar cabe en la memoria virtual
-        if (tamañoTotal + bytes > 6144) {
+        if (tamanioTotal + bytes <= 6144) {
             Proceso proc;               // Un proceso nuevo
             int bytesExtra = bytes;     // Variable con el tamaño del programa
-            tamañoTotal += bytes;
+            tamanioTotal += bytes;
 
             // Crea registro del proceso
             proc.idProceso = proceso;
@@ -308,12 +308,17 @@ void accederADireccion(int direccion, int proceso, bool modificar) {
     cout << "Obtener la direccion real correspondiente a la direccion virtual " << direccion << " del proceso " << proceso << endl;
     tiempo += 0.1;
 
-    // Calcular pagina
-    int pagina = (direccion / tamPagina) - ((direccion % tamPagina == 0 && direccion != 0) ? 1 : 0);
-
     // Recorrer las paginas hasta que encontremos la pagina donde esta el proceso
     for(int j = 0; j < procesos.size(); j++){
         if(procesos[j].idProceso == proceso) {
+
+            if (procesos[j].tamProceso < direccion) {
+                cout << "ERROR: La direccion dada no existe en el proceso\n";
+                return;
+            }
+
+            // Calcular pagina
+            int pagina = (direccion / tamPagina) - ((direccion % tamPagina == 0 && direccion != 0) ? 1 : 0);
 
             // Checamos si la página está cargada a memoria, si no hacemos swapping
             if(procesos[j].paginas[pagina] == -1){
@@ -379,7 +384,7 @@ void liberarProceso(int proceso) {
     for(int i = 0; i < procesos.size(); i++){
         if(proceso == procesos[i].idProceso){
             procesos[i].tiempoFinal = tiempo;
-            tamañoTotal -= procesos[i].tamProceso;
+            tamanioTotal -= procesos[i].tamProceso;
         }
     }
 
