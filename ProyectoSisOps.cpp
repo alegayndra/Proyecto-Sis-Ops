@@ -30,18 +30,10 @@
 using namespace std;
 
 //Marco de pagina
-struct ProcesoReal {
+struct ProcesoMemoria {
     int idProceso;
     double timestamp;
-    int cantBytes;
-};
-
-//Swaping [Virtual]
-struct ProcesoVirtual {
-    int idProceso;
     int pagina;
-    int marcoDePagina;
-    int cantBytes;
 };
 
 //Proceso
@@ -49,14 +41,14 @@ struct Proceso {
     int idProceso;
     double tiempoInicio;
     double tiempoFinal;
-    int cantPaginas;
     int cantPageFaults;
     int tamProceso;
+    vector<int> paginas;
 };
 
 // Vectores de memoria;
-vector<ProcesoReal*> M;
-vector<ProcesoVirtual*> S;
+vector<ProcesoMemoria*> M;
+vector<ProcesoMemoria*> S;
 
 // Vector de procesos
 vector<Proceso> procesos;
@@ -66,7 +58,7 @@ double tiempo;                  // El tiempo que ha transcurrido desde que inici
 int tamPagina;                  // El tamaño de página de las memorias
 int cantSwaps;                  // La cantidad total de swaps que han ocurrido en la simulación
 int cantPaginasVirtLibres;      // Cantidad de páginas libres en la memoria virtual
-string politica;
+string politica;                // Politica de reemplazo que se estará ejecutando
 
 /* Funcion donde se inicializa como NULL los vectores (ya que son de apuntadores) */
 void valoresIniciales() {
@@ -148,9 +140,10 @@ string mostrarRangos(vector<int> &vec) {
 /*
     Función para hacer el reemplazo de páginas
     Parámetros:
-    - posicion: posicion en S de la página de un proceso a la cual se le quiere asignar algún marco de página
+    - proceso: posicion de un proceso en procesos
+    - pagina: pagina del proceso a la cual se le quiere asignar un marco de página
 */
-void swapping(int posicion) {
+void swapping(int proceso, int pagina) {
 
     cantSwaps++;
     tiempo += 1;
@@ -167,22 +160,51 @@ void swapping(int posicion) {
     }
 
     // Se busca qué pagina de qué proceso tiene el marco de página que queremos utilizar
+    for (int i = 0; i < procesos.size(); i++) {
+        for (int j = 0; j < procesos[i].paginas.size(); j++) {
+            if (procesos[i].paginas[j] == posReal) {
+
+                // Esto es para marcar que no está en memoria real
+                procesos[i].paginas[j] = -1;
+
+                // Se asigna el marco de página
+                procesos[proceso].paginas[pagina] = posReal; 
+
+                for (int k = 0; k < 256; k++) {
+                    if (S[k] == NULL) {
+                        S[k] = new ProcesoMemoria;
+                        S[k]->idProceso = M[posReal]->idProceso;
+                        S[k]->timestamp = M[posReal]->timestamp;
+                        S[k]->pagina = M[posReal]->pagina;
+
+                        // Se actualiza la información del marco de página
+                        M[posReal]->idProceso = procesos[proceso].idProceso;
+                        M[posReal]->timestamp = tiempo;
+                        M[posReal]->pagina = pagina;
+
+                        cout << "La pagina " << pagina << " del proceso " << procesos[proceso].idProceso << " fue swappeada al marco " << posReal << endl;
+                
+                        return;
+                    }
+                }
+            }
+        }   
+    }
+}
+
+/*
+    Función utilizada para borrar una pagina de la memoria virtual
+    Parámetros:
+        - proceso: representa el ID del proceso
+        - pagina: representa la pagina del proceso que se encuentra en la memoria
+ */
+void borrarMemoriaVirtual(int proceso, int pagina) {
+
+    // Se busca el marco en memoria virtual
     for (int i = 0; i < 256; i++) {
-        if (S[i] != NULL && S[i]->marcoDePagina == posReal) {
-
-            // Esto es para marcar que no está en memoria real
-            S[i]->marcoDePagina = -1; 
-
-            // Se asigna el marco de página
-            S[posicion]->marcoDePagina = posReal; 
-
-            // Se actualiza la información del marco de página
-            M[posReal]->idProceso = S[posicion]->idProceso;
-            M[posReal]->timestamp = tiempo;
-            M[posReal]->cantBytes = S[posicion]->cantBytes;
-
-            cout << "La pagina " << S[posicion]->pagina << " del proceso " << S[posicion]->idProceso << " fue swappeada al marco " << S[posicion]->marcoDePagina << endl;
-            
+        if (S[i] != NULL && S[i]->idProceso == proceso && S[i]->pagina) {
+            delete S[i];
+            S[i] = NULL;
             return;
         }
     }
@@ -204,69 +226,48 @@ void cargarAMemoria(int bytes, int proceso) {
         // Checa si el proceso a cargar cabe en la memoria virtual
         if (cantPaginasVirtLibres >= cantPaginas) {
             Proceso proc;               // Un proceso nuevo
-            bool paginaEncontrada;      // Para determinar si ya se encontró un marco de página en memoria virtual
             int bytesExtra = bytes;     // Variable con el tamaño del programa
-
-            // Agregamos n cantidad de paginas a la memoria virtual del proceso que se está cargando
-            for (int i = 0; i < cantPaginas; i++) {
-                paginaEncontrada = false;
-
-                // Buscamos un marco de página vacío en la memoria virtual
-                for (int j = 0; !paginaEncontrada && j < 256; j++) {
-
-                    // Checa si el marco de página actual está vacío
-                    if (S[j] == NULL) {
-
-                        // Crea una nueva página en la memoria virtual
-                        S[j] = new ProcesoVirtual;
-                        S[j]->idProceso = proceso;
-                        S[j]->pagina = i;
-
-                        tiempo += 1;
-
-                        cantPaginasVirtLibres--;
-
-                        paginaEncontrada = true;
-
-                        // Se busca un marco de página en la memoria real que esté vacío
-                        bool memoriaEncontrada = false; // Determina
-                        for (int m = 0; !memoriaEncontrada && m < M.size(); m++) {
-
-                            // Checa si el marco de página actual está vacío
-                            if (M[m] == NULL) {
-
-                                // Se asigna la página al marco de página
-                                M[m] = new ProcesoReal;
-                                M[m]->idProceso = proceso;
-                                M[m]->timestamp = tiempo;
-                                M[m]->cantBytes = (bytesExtra > tamPagina) ? tamPagina : bytesExtra;
-
-                                S[j]->cantBytes = (bytesExtra > tamPagina) ? tamPagina : bytesExtra;
-                                S[j]->marcoDePagina = j;
-
-                                bytesExtra -= tamPagina;
-
-                                memoriaEncontrada = true;
-                            }
-                        }
-
-                        // En caso de que no haya encontrado un espacio en memoria, se hace el reemplazo de páginas
-                        if (!memoriaEncontrada) {
-                            swapping(j);
-                        }
-                    }
-                }
-            }
 
             // Crea registro del proceso
             proc.idProceso = proceso;
-            proc.cantPaginas = cantPaginas;
-            proc.tiempoInicio = tiempo;
             proc.tamProceso = bytes;
             proc.tiempoFinal = -1; // Marca que no ha terminado
             proc.cantPageFaults = 0;
 
             procesos.push_back(proc);
+
+            // Agregamos n cantidad de paginas a la memoria virtual del proceso que se está cargando
+            for (int i = 0; i < cantPaginas; i++) {
+
+                tiempo += 1;
+
+                // Se busca un marco de página en la memoria real que esté vacío
+                bool memoriaEncontrada = false; // Determina
+                for (int m = 0; !memoriaEncontrada && m < M.size(); m++) {
+
+                    // Checa si el marco de página actual está vacío
+                    if (M[m] == NULL) {
+
+                        // Se asigna la página al marco de página
+                        M[m] = new ProcesoMemoria;
+                        M[m]->idProceso = proceso;
+                        M[m]->timestamp = tiempo;
+                        M[m]->pagina = i;
+
+                        procesos[procesos.size() - 1].paginas.push_back(m);
+
+                        memoriaEncontrada = true;
+                    }
+                }
+
+                // En caso de que no haya encontrado un espacio en memoria, se hace el reemplazo de páginas
+                if (!memoriaEncontrada) {
+                    procesos[procesos.size() - 1].paginas.push_back(-1);
+                    swapping(procesos.size() - 1, i);
+                }    
+            }
+
+            procesos[procesos.size() - 1].tiempoInicio = tiempo;
 
             vector<int> marcos; // Para guardar los números de los marcos de página utilizados por el proceso cargado
 
@@ -278,18 +279,6 @@ void cargarAMemoria(int bytes, int proceso) {
             }
 
             cout << "Se asignaron los marcos de pagina [" << mostrarRangos(marcos) << "]" << endl;
-
-            //cout << endl;
-
-            //for (int i = 0; i < 256; i++) {
-            //    if (S[i] != NULL) {
-            //        cout << "\nPagina " << i << endl;
-            //        cout << "id " << S[i]->idProceso << " pag " << S[i]->pagina << " marco " << S[i]->marcoDePagina << " bytes " << S[i]->cantBytes;
-            //        cout << "\n";
-            //    }
-            //}
-
-            //cout << endl;
         }
         else {
             cout << "ERROR: No cabe el proceso en memoria virtual\n";
@@ -315,27 +304,22 @@ void accederADireccion(int direccion, int proceso, bool modificar) {
     int pagina = (direccion / tamPagina) - ((direccion % tamPagina == 0 && direccion != 0) ? 1 : 0);
 
     // Recorrer las paginas hasta que encontremos la pagina donde esta el proceso
-    for(int j = 0; j < 256; j++){
-        if(S[j] != NULL && S[j]->idProceso == proceso && S[j]->pagina == pagina){
+    for(int j = 0; j < procesos.size(); j++){
+        if(procesos[j].idProceso == proceso) {
 
             // Checamos si la página está cargada a memoria, si no hacemos swapping
-            if(S[j]->marcoDePagina == -1){
-                swapping(j);
-                        
-                // Busca el proceso en la lista de procesos para poder aumentar su cantidad de fallos de página
-                for (int i = 0; i < procesos.size(); i++) {
-                    if (proceso == procesos[i].idProceso) {
-                        procesos[i].cantPageFaults++;
-                    }
-                }
+            if(procesos[j].paginas[pagina] == -1){
+                borrarMemoriaVirtual(proceso, pagina);
+                swapping(j, pagina);
+                procesos[j].cantPageFaults++;
             }
 
             // Calcula la dirección reals
-            int dirReal = direccion % tamPagina + S[j]->marcoDePagina * tamPagina + ((direccion % tamPagina == 0 && direccion != 0) ? tamPagina : 0);
+            int dirReal = direccion % tamPagina + procesos[j].paginas[pagina] * tamPagina + ((direccion % tamPagina == 0 && direccion != 0) ? tamPagina : 0);
                     
             //Ajustar timestamp en memoria conforme a LRU
             if(politica == "LRU"){
-                M[S[j]->marcoDePagina]->timestamp = tiempo;
+                M[procesos[j].paginas[pagina]]->timestamp = tiempo;
             }
 
             cout << "Direccion Virtual es = " << direccion << " y Direccion Real = " << dirReal << endl;
