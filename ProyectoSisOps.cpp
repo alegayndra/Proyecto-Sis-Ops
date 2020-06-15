@@ -56,7 +56,8 @@ string politica;
 void valoresIniciales() {
     for (int i = 0; i < 128; i++) {
         M.push_back(NULL);
-        S.push_back(NULL);
+    }
+    for (int i = 0; i < 256; i++) {
         S.push_back(NULL);
     }
 
@@ -118,9 +119,10 @@ void swapping(int posicion) {
 void cargarAMemoria(int bytes, int proceso) {
 
     int cantPaginas;
-    cantPaginas = ceil(bytes / cantPaginas);
+    cantPaginas = ceil(bytes / tamPagina);
 
     if (cantPaginas + S.size() <= 2048) {
+        
         Proceso proc;
 
         for (int i = 0; i < cantPaginas; i++) {
@@ -130,6 +132,7 @@ void cargarAMemoria(int bytes, int proceso) {
                 if (S[j] == NULL) {
                     S[j] = new ProcesoVirtual;
                     S[j]->idProceso = proceso;
+                    
                     S[j]->timestamp = ++tiempo;
                     S[j]->pagina = j;
 
@@ -168,10 +171,12 @@ void cargarAMemoria(int bytes, int proceso) {
 
         procesos.push_back(proc);
     }
-
+ 
     cout << "Se asignaron los marcos de pagina [ ";
     // for(int i = 0; i < 256; i++){
-    //     if(proceso == S[i]->idProceso){
+    //     cout << S[i]->idProceso <<"    " << endl;
+    //     if(S[i] != NULL && proceso == S[i]->idProceso){
+    //         cout<< "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaAAAAAAAA"<< endl;
     //         cout << S[i]->marcoDePagina << ", ";
     //     }
     // }
