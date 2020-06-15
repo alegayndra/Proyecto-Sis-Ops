@@ -230,19 +230,19 @@ void cargarAMemoria(int bytes, int proceso) {
 
                         // Se busca un marco de página en la memoria real que esté vacío
                         bool memoriaEncontrada = false; // Determina
-                        for (int j = 0; !memoriaEncontrada && j < M.size(); j++) {
+                        for (int m = 0; !memoriaEncontrada && m < M.size(); m++) {
 
                             // Checa si el marco de página actual está vacío
-                            if (M[j] == NULL) {
+                            if (M[m] == NULL) {
 
                                 // Se asigna la página al marco de página
-                                M[j] = new ProcesoReal;
-                                M[j]->idProceso = proceso;
-                                M[j]->timestamp = tiempo;
-                                M[j]->cantBytes = (bytesExtra > tamPagina) ? tamPagina : bytesExtra;
+                                M[m] = new ProcesoReal;
+                                M[m]->idProceso = proceso;
+                                M[m]->timestamp = tiempo;
+                                M[m]->cantBytes = (bytesExtra > tamPagina) ? tamPagina : bytesExtra;
 
-                                S[i]->cantBytes = (bytesExtra > tamPagina) ? tamPagina : bytesExtra;
-                                S[i]->marcoDePagina = j;
+                                S[j]->cantBytes = (bytesExtra > tamPagina) ? tamPagina : bytesExtra;
+                                S[j]->marcoDePagina = j;
 
                                 bytesExtra -= tamPagina;
 
@@ -278,6 +278,18 @@ void cargarAMemoria(int bytes, int proceso) {
             }
 
             cout << "Se asignaron los marcos de pagina [" << mostrarRangos(marcos) << "]" << endl;
+
+            //cout << endl;
+
+            //for (int i = 0; i < 256; i++) {
+            //    if (S[i] != NULL) {
+            //        cout << "\nPagina " << i << endl;
+            //        cout << "id " << S[i]->idProceso << " pag " << S[i]->pagina << " marco " << S[i]->marcoDePagina << " bytes " << S[i]->cantBytes;
+            //        cout << "\n";
+            //    }
+            //}
+
+            //cout << endl;
         }
         else {
             cout << "ERROR: No cabe el proceso en memoria virtual\n";
