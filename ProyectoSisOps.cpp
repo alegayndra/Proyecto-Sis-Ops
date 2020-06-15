@@ -306,7 +306,6 @@ void cargarAMemoria(int bytes, int proceso) {
 */
 void accederADireccion(int direccion, int proceso, bool modificar) {
     cout << "Obtener la direccion real correspondiente a la direccion virtual " << direccion << " del proceso " << proceso << endl;
-    tiempo += 0.1;
 
     // Recorrer las paginas hasta que encontremos la pagina donde esta el proceso
     for(int j = 0; j < procesos.size(); j++){
@@ -330,6 +329,8 @@ void accederADireccion(int direccion, int proceso, bool modificar) {
             // Calcula la dirección reals
             int dirReal = direccion % tamPagina + procesos[j].paginas[pagina] * tamPagina + ((direccion % tamPagina == 0 && direccion != 0) ? tamPagina : 0);
                     
+            tiempo += 0.1;
+            
             //Ajustar timestamp en memoria conforme a LRU
             if(politica == "LRU"){
                 M[procesos[j].paginas[pagina]]->timestamp = tiempo;
@@ -393,7 +394,7 @@ void liberarProceso(int proceso) {
         cout << "Se liberan los marcos de memoria real: [" << mostrarRangos(marcosDePagina) << "]" << endl;
     }
     else{
-        cout << "El proceso no esta ocupando ningun marco de pagina\n";
+        cout << "El proceso no esta ocupando ningun marco de pagina en memoria real\n";
     }
 
     // Checa si se liberaron marcos de página de la memoria virtual
@@ -401,7 +402,7 @@ void liberarProceso(int proceso) {
         cout << "Se liberan los marcos del area de swapping: [" << mostrarRangos(paginas) << "]" << endl;
     }
     else{
-        cout << "El proceso no esta ocupando ninguna pagina\n";
+        cout << "El proceso no esta ocupando ningun marco de pagina en memoria virtual\n";
     }
 }
 
