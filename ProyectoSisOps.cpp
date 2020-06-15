@@ -305,7 +305,7 @@ void cargarAMemoria(int bytes, int proceso) {
         - modificar: condicion para saber si fue modificado
 */
 void accederADireccion(int direccion, int proceso, bool modificar) {
-    cout << "Obtener la direccion real correspondiente a la direccion virtual " << direccion << " del proceso " << proceso << endl;
+    cout << "Obtener la direccion real correspondiente a la direccion virtual " << direccion << " del proceso " << proceso << " y " << ((modificar) ? "modificar" : "accesar") << " dicha direccion" <<  endl;
 
     // Recorrer las paginas hasta que encontremos la pagina donde esta el proceso
     for(int j = 0; j < procesos.size(); j++){
