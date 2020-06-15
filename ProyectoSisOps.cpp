@@ -14,8 +14,8 @@
     Lenguaje y versión: C++11
 
     Lineas de Código:
-    - Totales: 540
-    - Sin comentarios: 427
+    - Totales: 553
+    - Sin comentarios: 433
 */
 
 #include <iostream>
