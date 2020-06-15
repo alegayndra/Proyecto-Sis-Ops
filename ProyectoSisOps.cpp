@@ -9,7 +9,7 @@
     - Alberto García Viegas             | A00822649
     - José Carlos del Castillo Estrada  | A00822554
     - Paola Masiel Rijo Martinez        | A00823735
-    - Tanya Yaretzi
+    - Tanya Yaretzi González Elizondo   | A00823408
 
     Lenguaje y versión: C++11
 
@@ -109,7 +109,7 @@ string mostrarRangos(vector<int> &vec) {
 
     for (int i = 0; i < vec.size(); i++) {
         // Checa si hay valores consecutivos
-        if (vec[i] == vec[i + 1] - 1) {
+        if (i < vec.size() - 1 && vec[i] == vec[i + 1] - 1) {
 
             // inicio y fin del rango
             int inicio, fin;
@@ -122,6 +122,8 @@ string mostrarRangos(vector<int> &vec) {
                 fin++;
                 i++;
             }
+
+            i--;
 
             // Se concatena el rango al texto
             // e.g. si inicio = 1 y fin = 5, entonces se concatena 1-5
@@ -180,6 +182,8 @@ void swapping(int posicion) {
             M[posReal]->cantBytes = S[posicion]->cantBytes;
 
             cout << "La pagina " << S[posicion]->pagina << " del proceso " << S[posicion]->idProceso << " fue swappeada al marco " << S[posicion]->marcoDePagina << endl;
+            
+            return;
         }
     }
 }
@@ -195,7 +199,7 @@ void cargarAMemoria(int bytes, int proceso) {
     // Checa si el proceso a cargar cabe en la memoria real
     if (bytes <= 2048) {
 
-        int cantPaginas = ceil(bytes / tamPagina); // La cantidad de página que va a ocupar el nuevo proceso
+        int cantPaginas = ceil(bytes / tamPagina) + ((bytes % tamPagina > 0) ? 1 : 0); // La cantidad de página que va a ocupar el nuevo proceso
 
         // Checa si el proceso a cargar cabe en la memoria virtual
         if (cantPaginasVirtLibres >= cantPaginas) {
