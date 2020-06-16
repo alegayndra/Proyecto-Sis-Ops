@@ -1,5 +1,6 @@
 *.vcxproj*
 *.exe
-Debug
-.vscode
+/Debug
+/.vscode
 *.out
+*.o
