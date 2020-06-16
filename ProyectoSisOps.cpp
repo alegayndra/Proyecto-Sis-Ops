@@ -66,8 +66,7 @@ void valoresIniciales() {
     // Se inicializan las memorias con valores nulos
     for (int i = 0; i < 128; i++) {
         M.push_back(NULL);
-    }
-    for (int i = 0; i < 256; i++) {
+        S.push_back(NULL);
         S.push_back(NULL);
     }
 
@@ -219,7 +218,6 @@ void borrarMemoriaVirtual(int proceso, int pagina) {
  */
 void cargarAMemoria(int bytes, int proceso) {
 
-
     for (int i = 0; i < procesos.size(); i++) {
         if (procesos[i].idProceso == proceso) {
             cout << "ERROR: El proceso ya se cargó anteriormente a memoria en la misma corrida\n";
@@ -266,11 +264,10 @@ void cargarAMemoria(int bytes, int proceso) {
                         M[m]->pagina = i;
 
                         procesos[procesos.size() - 1].paginas.push_back(m);
+
                         memoriaEncontrada = true;
                     }
                 }
-
-                memoriaEncontrada = true;
 
                 // En caso de que no haya encontrado un espacio en memoria, se hace el reemplazo de páginas
                 if (!memoriaEncontrada) {
