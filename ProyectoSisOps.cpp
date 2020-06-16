@@ -54,11 +54,11 @@ vector<ProcesoMemoria*> S;
 vector<Proceso> procesos;
 
 // Variables globales
-double tiempo;                  // El tiempo que ha transcurrido desde que inicio la simulación
-int tamPagina;                  // El tamaño de página de las memorias
-int cantSwaps;                  // La cantidad total de swaps que han ocurrido en la simulación
-int tamanioTotal;            // Cantidad de bytes totales entre todos los procesos
-string politica;                // Politica de reemplazo que se estará ejecutando
+double tiempo;              // El tiempo que ha transcurrido desde que inicio la simulación
+int tamPagina;              // El tamaño de página de las memorias
+int cantSwaps;              // La cantidad total de swaps que han ocurrido en la simulación
+int paginasTotalOcupadas;   // Cantidad de paginas totales ocupadas entre todos ambas memorias
+string politica;            // Politica de reemplazo que se estará ejecutando
 
 /* Funcion donde se inicializa como NULL los vectores (ya que son de apuntadores) */
 void valoresIniciales() {
@@ -66,7 +66,8 @@ void valoresIniciales() {
     // Se inicializan las memorias con valores nulos
     for (int i = 0; i < 128; i++) {
         M.push_back(NULL);
-        S.push_back(NULL);
+    }
+    for (int i = 0; i < 256; i++) {
         S.push_back(NULL);
     }
 
@@ -74,7 +75,7 @@ void valoresIniciales() {
     tiempo = 0;
     tamPagina = 16;
     cantSwaps = 0;
-    tamanioTotal = 0;
+    paginasTotalOcupadas = 0;
 }
 
 /* Función utilizada para reiniciar los valores en la función de "fin" */
@@ -182,7 +183,7 @@ void swapping(int proceso, int pagina) {
                         M[posReal]->timestamp = tiempo;
                         M[posReal]->pagina = pagina;
 
-                        cout << "La pagina " << pagina << " del proceso " << procesos[proceso].idProceso << " fue swappeada al marco " << posReal << endl;
+                        cout << "La pagina " << S[k]->pagina << " del proceso " << S[k]->idProceso << " fue swappeada al marco " << k << " de la memoria virtual" << endl;
                 
                         return;
                     }
@@ -218,9 +219,10 @@ void borrarMemoriaVirtual(int proceso, int pagina) {
  */
 void cargarAMemoria(int bytes, int proceso) {
 
+
     for (int i = 0; i < procesos.size(); i++) {
         if (procesos[i].idProceso == proceso) {
-            cout << "ERROR: El proceso ya existe en memoria\n";
+            cout << "ERROR: El proceso ya se cargó anteriormente a memoria en la misma corrida\n";
             return;
         }
     }
@@ -231,16 +233,17 @@ void cargarAMemoria(int bytes, int proceso) {
         int cantPaginas = ceil(bytes / tamPagina) + ((bytes % tamPagina > 0) ? 1 : 0); // La cantidad de página que va a ocupar el nuevo proceso
 
         // Checa si el proceso a cargar cabe en la memoria virtual
-        if (tamanioTotal + bytes <= 6144) {
+        if (paginasTotalOcupadas + cantPaginas <= 384) {
             Proceso proc;               // Un proceso nuevo
             int bytesExtra = bytes;     // Variable con el tamaño del programa
-            tamanioTotal += bytes;
+            paginasTotalOcupadas += cantPaginas;
 
             // Crea registro del proceso
             proc.idProceso = proceso;
             proc.tamProceso = bytes;
             proc.tiempoFinal = -1; // Marca que no ha terminado
             proc.cantPageFaults = 0;
+            proc.tiempoInicio = tiempo;
 
             procesos.push_back(proc);
 
@@ -263,10 +266,11 @@ void cargarAMemoria(int bytes, int proceso) {
                         M[m]->pagina = i;
 
                         procesos[procesos.size() - 1].paginas.push_back(m);
-
                         memoriaEncontrada = true;
                     }
                 }
+
+                memoriaEncontrada = true;
 
                 // En caso de que no haya encontrado un espacio en memoria, se hace el reemplazo de páginas
                 if (!memoriaEncontrada) {
@@ -274,8 +278,6 @@ void cargarAMemoria(int bytes, int proceso) {
                     swapping(procesos.size() - 1, i);
                 }    
             }
-
-            procesos[procesos.size() - 1].tiempoInicio = tiempo;
 
             vector<int> marcos; // Para guardar los números de los marcos de página utilizados por el proceso cargado
 
@@ -289,7 +291,7 @@ void cargarAMemoria(int bytes, int proceso) {
             cout << "Se asignaron los marcos de pagina [" << mostrarRangos(marcos) << "]" << endl;
         }
         else {
-            cout << "ERROR: La memoria virtual se acabaría\n";
+            cout << "ERROR: No hay espacio suficiente en memoria virtual para hacer swapping\n";
         }
     }
     else {
@@ -385,7 +387,7 @@ void liberarProceso(int proceso) {
     for(int i = 0; i < procesos.size(); i++){
         if(proceso == procesos[i].idProceso){
             procesos[i].tiempoFinal = tiempo;
-            tamanioTotal -= procesos[i].tamProceso;
+            paginasTotalOcupadas -= procesos[i].tamProceso;
         }
     }
 
